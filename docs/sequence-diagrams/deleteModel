@@ -1,0 +1,36 @@
+# Delete Model (v0.0.1)
+# 22 March 2021
+
+title Delete Model
+
+actor User
+boundary Frontend
+control Backend
+database Database
+entity FileSystem
+
+activate User
+User->Frontend:Clicks delete button
+deactivate User
+
+activate Frontend
+Frontend->Backend:Delete document
+activate Backend
+alt user role is not privileged
+Backend-->>Frontend:error
+Frontend-->>User:error
+end
+Backend->Database:Database deletion
+activate Database
+alt database deletion constraints are not met
+Database-->>Backend: error
+Backend-->>Frontend:error
+Frontend-->>User:error
+else database deletion constraints are met
+Database-->>Backend:results
+deactivate Database
+Backend-->>Frontend:results
+deactivate Backend
+end
+Frontend-->>User:Render list view page
+deactivate Frontend

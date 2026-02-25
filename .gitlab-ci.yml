@@ -1,0 +1,431 @@
+image: node:14
+
+variables:
+  DOCS_FOLDER: "docs"
+  SPEC_TO_DISPLAY: "openapi.yaml"
+
+stages:
+  - pre-mr
+  - post-mr
+  - pre-dev
+  - dev
+  - post-dev
+  - pre-stage
+  - stage
+  - post-stage
+  - pre-prod
+  - prod
+  - post-prod
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+sast:
+  stage: pre-mr
+
+
+semgrep-sast:
+  stage: pre-mr
+  cache: {}
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+
+cache:
+  paths:
+    - node_modules/
+
+jest:
+  stage: pre-mr
+  except:
+    - tags
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_COMMIT_REF_PROTECTED
+  tags:
+    - node
+  services:
+    - mongo:4.4.3
+  script:
+    - npm i
+    - npm i jest supertest jest-junit
+    - npm run seed-user-roles
+    - npm run seed-test-users
+    - npm run test-cicd
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - junit.xml
+    expire_in: 7 days
+
+pages:
+  stage: post-mr
+  before_script:
+    - npm install swagger-ui-dist@3.22.1
+  script:
+    - mkdir public
+    - cp -rp node_modules/swagger-ui-dist/* public
+    - cp -rp $DOCS_FOLDER/* public
+    - sed -i "s#https://petstore\.swagger\.io/v2/swagger\.json#$SPEC_TO_DISPLAY#g" public/index.html
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
+# Uncomment build_dev_image, kubectl_check_dev deploy_dev when developing and deploying to dev environment
+# build_dev_image:
+#   stage: pre-dev
+#   when: manual
+#   image:
+#     name: gcr.io/kaniko-project/executor:debug
+#     entrypoint: [""]
+#   script:
+#     - mkdir -p /kaniko/.docker
+#     - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "builder" "${BUILDER_PASS}" | base64 -w 0)\"}}}" > /kaniko/.docker/config.json
+#     - >-
+#       /kaniko/executor
+#       --context "${CI_PROJECT_DIR}"
+#       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+#       --destination "${CI_REGISTRY_IMAGE}:dev-${CI_COMMIT_TAG}"
+#   only:
+#     - tags
+#   allow_failure: false
+
+# kubectl_check_dev:
+#   stage: dev
+#   image:
+#     name: bitnami/kubectl:latest
+#     entrypoint: ['']
+#   only:
+#     - tags
+#   script:
+#     - kubectl config get-contexts
+#     - kubectl config use-context maroon-studios/phisci/pms-server:pms-server-dev
+#     - kubectl get pods --namespace=dev
+#     - kubectl get deployments pms-backend --namespace=dev | grep -q 'deployments.apps "pms-backend" not found' && exit 1 || exit 0
+#   allow_failure: false
+
+# deploy_dev:
+#   stage: dev
+#   when: manual
+#   needs:
+#     - build_dev_image
+#     - kubectl_check_dev
+#   image:
+#     name: bitnami/kubectl:latest
+#     entrypoint: ['']
+#   only:
+#     - tags
+#   environment:
+#     name: development
+#     url: https://pms-dev-gcp.maroonstudios.com
+#   script:
+#     - echo ${CI_REGISTRY}
+#     - echo ${TAG}
+#     - kubectl config get-contexts
+#     - kubectl config use-context maroon-studios/phisci/pms-server:pms-server-dev
+#     - kubectl set image deployment pms-backend pms-server-image=${CI_REGISTRY_IMAGE}:dev-${CI_COMMIT_TAG} --namespace=dev
+
+.nikto_dast_dev:
+  stage: post-dev
+  needs:
+    - deploy_dev
+  tags:
+    - secure
+  only:
+    - tags
+  when: on_success
+  before_script:
+    - mkdir junit
+  script:
+    - nikto -ask no -Tuning 1234567890abcedx -mutate 12345 -host http://$DEPLOY_SERVER_PMS_GKE/login -Format xml -output nikto.xml
+    - pip2.7 install junit-xml-output
+    - python tests/tools/nikto/parser.py -f nikto.xml
+    - python tests/tools/junit.py -t nikto -f nikto.xml
+    - exit $( grep -c "OSVDB-" nikto.xml || true; )
+  artifacts:
+    when: always
+    reports:
+      junit: junit/junit_nikto.xml
+    paths:
+      - nikto.xml
+    expire_in: 7 days
+
+.nmap_dast_dev:
+  stage: post-dev
+  needs:
+    - deploy_dev
+  tags:
+    - secure
+  only:
+    - tags
+  when: on_success
+  script:
+    - nmap -oX nmap.xml -A -T4 --script nmap-vulners/ --stylesheet tests/tools/nmap/nmap.xsl $DEPLOY_SERVER_PMS_GKE
+    - xsltproc nmap.xml -o nmap.html
+    - exit $( grep -c 'true' nmap.xml || true; )
+  artifacts:
+    when: always
+    paths:
+      - nmap.xml
+      - nmap.html
+    expire_in: 7 days
+
+.wapiti_dast_dev:
+  stage: post-dev
+  needs:
+    - deploy_dev
+  tags:
+    - secure
+  only:
+    - tags
+  when: on_success
+  script:
+    - wapiti -l 2 --skip-crawl --no-bugreport -u http://$DEPLOY_SERVER_PMS_GKE/login -f html -o wapiti.html
+    - wapiti -l 2 --skip-crawl --no-bugreport -u http://$DEPLOY_SERVER_PMS_GKE/login -f txt -o wapiti.txt
+    - exit $( grep -c ':\s{1,}[1-9]{1}[0-9]{0,}' wapiti.txt || true; )
+  artifacts:
+    when: always
+    paths:
+      - wapiti.html
+      - wapiti.txt
+    expire_in: 7 days
+
+build_demo_image:
+  stage: pre-stage
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "builder" "${BUILDER_PASS}" | base64 -w 0)\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}:demo-${CI_COMMIT_TAG}"
+  when: manual
+  only:
+    - tags
+  tags:
+    - docker
+
+kubectl_check_demo:
+  stage: stage
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  only:
+    - tags
+  script:
+    - kubectl config get-contexts
+    - kubectl config use-context maroon-studios/phisci/pms-server:pms-server-demo
+    - kubectl get pods --namespace=demo
+    - kubectl get deployments pms-demo-backend --namespace=demo | grep -q 'deployments.apps "pms-demo-backend" not found' && exit 1 || exit 0
+  allow_failure: false
+
+deploy_demo:
+  stage: stage
+  when: manual
+  needs:
+    - build_demo_image
+    - kubectl_check_demo
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  only:
+    - tags
+  environment:
+    name: demonstration
+    url: https://pms-demo-gcp.maroonstudios.com
+  script:
+    - echo ${CI_REGISTRY}
+    - echo ${TAG}
+    - kubectl config get-contexts
+    - kubectl config use-context maroon-studios/phisci/pms-server:pms-server-demo
+    - kubectl set image deployment pms-demo-backend pms-demo-server-image=${CI_REGISTRY_IMAGE}:demo-${CI_COMMIT_TAG} --namespace=demo
+
+.nikto_dast_demo:
+  stage: post-stage
+  needs:
+    - deploy_demo
+  tags:
+    - secure
+  only:
+    - tags
+  when: on_success
+  before_script:
+    - mkdir junit
+  script:
+    - nikto -ask no -Tuning 1234567890abcedx -mutate 12345 -host http://$DEPLOY_SERVER_PMS_DEMO_GKE/login -Format xml -output nikto.xml
+    - pip2.7 install junit-xml-output
+    - python tests/tools/nikto/parser.py -f nikto.xml
+    - python tests/tools/junit.py -t nikto -f nikto.xml
+    - exit $( grep -c "OSVDB-" nikto.xml || true; )
+  artifacts:
+    when: always
+    reports:
+      junit: junit/junit_nikto.xml
+    paths:
+      - nikto.xml
+    expire_in: 7 days
+
+.nmap_dast_demo:
+  stage: post-stage
+  needs:
+    - deploy_demo
+  tags:
+    - secure
+  only:
+    - tags
+  when: on_success
+  script:
+    - nmap -oX nmap.xml -A -T4 --script nmap-vulners/ --stylesheet tests/tools/nmap/nmap.xsl $DEPLOY_SERVER_PMS_DEMO_GKE
+    - xsltproc nmap.xml -o nmap.html
+    - exit $( grep -c 'true' nmap.xml || true; )
+  artifacts:
+    when: always
+    paths:
+      - nmap.xml
+      - nmap.html
+    expire_in: 7 days
+
+.wapiti_dast_demo:
+  stage: post-stage
+  needs:
+    - deploy_demo
+  tags:
+    - secure
+  only:
+    - tags
+  when: on_success
+  script:
+    - wapiti -l 2 --skip-crawl --no-bugreport -u http://$DEPLOY_SERVER_PMS_DEMO_GKE/login -f html -o wapiti.html
+    - wapiti -l 2 --skip-crawl --no-bugreport -u http://$DEPLOY_SERVER_PMS_DEMO_GKE/login -f txt -o wapiti.txt
+    - exit $( grep -c ':\s{1,}[1-9]{1}[0-9]{0,}' wapiti.txt || true; )
+  artifacts:
+    when: always
+    paths:
+      - wapiti.html
+      - wapiti.txt
+    expire_in: 7 days
+
+build_prod_image:
+  stage: pre-prod
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "builder" "${BUILDER_PASS}" | base64 -w 0)\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}:prod-${CI_COMMIT_TAG}"
+  when: manual
+  only:
+    - tags
+  tags:
+    - docker
+
+# deploy_prod1:
+#   stage: prod
+#   tags:
+#     - build
+#   only:
+#     - tags
+#   needs:
+#     - build_demo_image
+#   environment:
+#     name: prod
+#   when: manual
+#   script:
+#     - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+#     - bash deploy/stage-prod.sh $DEPLOY_SERVER_PMS_PROD1 $CI_REGISTRY_IMAGE $CI_COMMIT_TAG $IMAGEPULL_PASS
+
+# deploy_prod2:
+#   stage: prod
+#   tags:
+#     - build
+#   only:
+#     - tags
+#   needs:
+#     - build_demo_image
+#   environment:
+#     name: prod
+#   when: manual
+#   script:
+#     - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+#     - bash deploy/stage-prod.sh $DEPLOY_SERVER_PMS_PROD2 $CI_REGISTRY_IMAGE $CI_COMMIT_TAG $IMAGEPULL_PASS
+
+# .nikto_dast_prod:
+#   stage: post-prod
+#   needs:
+#     - deploy_prod1
+#     - deploy_prod2
+#   tags:
+#     - secure
+#   only:
+#     - tags
+#   when: on_success
+#   before_script:
+#     - mkdir junit
+#   script:
+#     - nikto -ask no -Tuning 1234567890abcedx -mutate 12345 -host http://$DEPLOY_SERVER_PMS_PROD/login -Format xml -output nikto.xml
+#     - pip2.7 install junit-xml-output
+#     - python tests/tools/nikto/parser.py -f nikto.xml
+#     - python tests/tools/junit.py -t nikto -f nikto.xml
+#     - exit $( grep -c "OSVDB-" nikto.xml || true; )
+#   artifacts:
+#     when: always
+#     reports:
+#       junit: junit/junit_nikto.xml
+#     paths:
+#       - nikto.xml
+#     expire_in: 7 days
+
+# .nmap_dast_prod:
+#   stage: post-prod
+#   needs:
+#     - deploy_prod1
+#     - deploy_prod2
+#   tags:
+#     - secure
+#   only:
+#     - tags
+#   when: on_success
+#   script:
+#     - nmap -oX nmap.xml -A -T4 --script nmap-vulners/ --stylesheet tests/tools/nmap/nmap.xsl $DEPLOY_SERVER_PMS_PROD
+#     - xsltproc nmap.xml -o nmap.html
+#     - exit $( grep -c 'true' nmap.xml || true; )
+#   artifacts:
+#     when: always
+#     paths:
+#       - nmap.xml
+#       - nmap.html
+#     expire_in: 7 days
+
+# .wapiti_dast_prod:
+#   stage: post-prod
+#   needs:
+#     - deploy_prod1
+#     - deploy_prod2
+#   tags:
+#     - secure
+#   only:
+#     - tags
+#   when: on_success
+#   script:
+#     - wapiti -l 2 --skip-crawl --no-bugreport -u http://$DEPLOY_SERVER_PMS_PROD/login -f html -o wapiti.html
+#     - wapiti -l 2 --skip-crawl --no-bugreport -u http://$DEPLOY_SERVER_PMS_PROD/login -f txt -o wapiti.txt
+#     - exit $( grep -c ':\s{1,}[1-9]{1}[0-9]{0,}' wapiti.txt || true; )
+#   artifacts:
+#     when: always
+#     paths:
+#       - wapiti.html
+#       - wapiti.txt
+#     expire_in: 7 days

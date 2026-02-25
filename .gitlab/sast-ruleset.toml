@@ -1,0 +1,13 @@
+[nodejs-scan]
+  description = 'custom ruleset for nodejs-scan'
+
+  [[nodejs-scan.passthrough]]
+    type  = "raw"
+    value = '''
+- nodejs-extensions:
+  - .js
+
+  ignore-paths:
+  - node_modules
+  - test
+'''

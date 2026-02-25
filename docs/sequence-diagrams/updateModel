@@ -1,0 +1,73 @@
+# Update Model (v0.0.1)
+# 22 March 2021
+
+title Update Model
+
+actor User
+boundary Frontend
+control Backend
+database Database
+entity FileSystem
+
+activate User
+User->Frontend:Clicks edit page
+deactivate User
+
+loop while invalid
+  alt hasDependentField
+    activate Frontend
+	Frontend->Backend:Query dependent fields
+    activate Backend
+    Backend->Database:Database query
+    activate Database
+    Database-->>Backend:results
+    deactivate Database
+    Backend-->>Frontend:results
+    deactivate Backend
+    Frontend->>User:Render edit page
+    deactivate Frontend
+  end
+  
+  activate User
+  User->Frontend:Fill out fields
+  activate Frontend
+  Frontend->Frontend:Validate fields
+  alt hasError
+  Frontend->>User:error
+  end
+  deactivate Frontend
+  User->Frontend:User clicks submit
+  deactivate User
+
+  alt hasError
+    activate Frontend
+	Frontend->>User:error
+    deactivate Frontend
+  else !hasError
+  	activate Frontend
+  	Frontend->Backend:Update information
+    activate Backend
+    Backend->Database:Update information
+    activate Database
+    alt hasDatabaseError
+      Database-->>Backend:error
+      Backend-->>Frontend:error
+      Frontend->>User:error
+    else !hasDatabaseError
+      alt hasAttachments
+      	Frontend->Backend:Submit attachment
+        Backend->Database:Update file metadata
+        Database-->>Backend:info
+        activate FileSystem
+        Backend->FileSystem:Upload
+        deactivate FileSystem
+      end
+      Database-->>Backend:info
+      Backend-->>Frontend:info
+      Frontend->>User:Call view page
+    end
+    deactivate Database
+    deactivate Backend
+  	deactivate Frontend
+  end
+end

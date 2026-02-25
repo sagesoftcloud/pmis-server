@@ -1,0 +1,57 @@
+<!--
+- File name:verify_email.njk
+- Program description:
+- Email notif for password reset
+- 
+- <Code details in specific>
+- 
+- Module Exports:
+- - verify_email.njk: Uses the base.njk then provide
+- a template to be used by the mailer module to send
+- newly created user their password
+-->
+
+
+{% extends "./base.njk" %}
+
+{% block content %}
+    <div class="l--body">
+        <img class="l--title--logo" src='cid:app-logo'/>
+        <h2>
+            Hello {{userObject.firstName}} {{userObject.lastName}},
+        </h2>
+        {% if message %}
+        <h2>{{message}}</h2>
+        <h2>Please log in using the username and generated password below at</h2>
+        {% elif not message%}
+        <h2>Congratulations! Your account has been successfully created. Please log in using the username and generated password below at the</h2>
+        {% endif %}
+        <a href="{{homepage}}"><h2 style="color: blue">{{homepage}}</h2></a>
+
+        <h2>
+            We encourage you to change the password after logging in.
+        </h2>
+
+        {% if showVerifyEmailButton %}
+        <h2>Click the button below to verify your e-mail:</h2>
+        <h2 style="margin: 3%">
+            <a class="btn l--confirm-button" href="{{link}}">
+            <h3 style="color: blue">Confirm E-mail Address</h3>
+            </a>
+        </h2>
+        {% endif %}
+        {% if username %}
+        <h2 style="display: inline;">
+          Username: <a style="margin-left: 5px;" class="email" href="mailto:{{username}}">{{username}}</a>
+        </h2>
+        {% endif %}
+        <br/>
+        {% if password %}
+        <h2 style="display: inline;">Password: <span class="fixed" style="color: blue">{{password}}</span></h2>
+        {% endif %}
+        <h2>
+            This is an auto-generated message. For any concerns, please contact the System Administrator.
+        </h2>
+    </div>
+{% endblock %}
+                 

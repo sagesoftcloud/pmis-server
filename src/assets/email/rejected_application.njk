@@ -1,0 +1,32 @@
+<!--
+- File name: rejected_application.njk
+- Program description:
+- Email notif for passing the exam
+- 
+- <Code details in specific>
+- 
+- Module Exports:
+- - rejected_application.njk: Uses the base.njk then provide
+- a template to be used by the mailer module to send
+- notification to a user that his/her application has been rejected
+-->
+
+
+{% extends "./base.njk" %}
+
+{% block content %}
+    <div class="l--body">
+        <img class="l--title--logo" src='cid:app-logo'/>
+
+        <h2>
+            Hello {{userObject.firstName}} {{userObject.lastName}},
+        </h2>
+
+        <h2>{{message}}</h2>
+        <h2>
+          This is an auto-generated message. For any concerns, please contact the PMS System Administrator.
+        </h2>
+       
+    </div>
+{% endblock %}
+                 

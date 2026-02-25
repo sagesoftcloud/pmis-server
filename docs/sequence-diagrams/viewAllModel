@@ -1,0 +1,26 @@
+# View All Model (v0.0.1)
+# 22 March 2021
+
+title View All Model
+
+actor User
+boundary Frontend
+control Backend
+database Database
+entity FileSystem
+
+activate User
+User->Frontend:Clicks view all page
+deactivate User
+
+activate Frontend
+Frontend->Backend:Query fields (with search,\npagination, user role access)
+activate Backend
+Backend->Database:Database query
+activate Database
+Database-->>Backend:results
+deactivate Database
+Backend-->>Frontend:results
+deactivate Backend
+Frontend->>User:Render list view page
+deactivate Frontend

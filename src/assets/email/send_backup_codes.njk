@@ -1,0 +1,52 @@
+<!--
+- File name:send_backup_codes.njk
+- Program description:
+- Email notif for password reset
+- 
+- <Code details in specific>
+- 
+- Module Exports:
+- - send_backup_codes.njk: Uses the base.njk then provide
+- a template to be used by the mailer module to send
+- user their backup codes
+-->
+{% extends "./base.njk" %}
+
+{% block content %}
+    <div class="l--body">
+        <div class="l--title">
+            <img class="l--title--logo" src='cid:app-logo'/>
+        </div>
+    
+        <h1>{{appData.title}}</h1>
+
+        <h2 class="text--header">
+            Hi {{userObject.firstName}} {{userObject.lastName}},
+        </h2>
+
+        <h3>Here are the backup codes that are generated from the system.</h3>
+        <h3>Print a copy of these backup codes to use in case your two-factor authentication methods are not accessible.</h3>
+        <h3>Keep these codes in a secure location at all times.</h3>
+        <h3>You may also generate a new set of backup codes as you wish.</h3>
+        
+        <ul>
+        {% for item in backupCodes %}
+            <li><code>{{item}}</code></li>
+        {% endfor %}
+        </ul>
+
+        {% if homepage %}
+        <h3>
+            <p>You can log-in here:</p>
+            <p><a href="{{homepage}}">{{homepage}}</a></p>
+        </h3>
+        {% endif %}
+    </div>
+    <h3>
+        Thank you, <br> <span class="clr--primary"><b>NPC AES Team</b></span>
+    </h3>
+    <h2>
+      This is an auto-generated message. For any concerns, please contact the PMS System Administrator.
+    </h2>
+{% endblock %}
+                 

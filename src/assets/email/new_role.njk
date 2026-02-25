@@ -1,0 +1,37 @@
+{% extends "./base.njk" %}
+
+<!--
+- File name: examination_fail.njk
+- Program description:
+- Email notif for failing the exam
+- 
+- <Code details in specific>
+- 
+- Module Exports:
+- - examination_fail.njk: Uses the base.njk then provide
+- a template to be used by the mailer module to send
+- notification to a user that he/she failed the exam
+-->
+
+
+{% block content %}
+    <div class="l--body">
+        <img class="l--title--logo" src='cid:app-logo'/>
+
+        <h2>
+            Hello {{userObject.firstName}} {{userObject.lastName}},
+        </h2>
+
+        <h2>{{message}}</h2>
+        
+        <h2>Role: {{roleName}} </h2>
+        <h2>Creator: {{userInfo.firstName}} {{userInfo.lastName}} </h2>
+        <h2>Type of Role: {{roleType}} </h2>
+        <h2>Email: {{userInfo.email}}</h2>
+        <h2>Date and Time Created: {{dateCreated}}</h2>
+
+        <br/>
+        <br/>
+    </div>
+{% endblock %}
+                 

@@ -1,0 +1,33 @@
+<!--
+- File name: email_test.njk
+- Program description:
+- Email notif for email test
+-
+- <Code details in specific>
+-
+- Module Exports:
+- - email_change.njk: Uses the base.njk then provide
+- a template to be used by the mailer module to send
+- a smoketest email
+-->
+
+{% extends "./base.njk" %}
+
+{% block content %}
+    <div class="l--body">
+        <div class="l--title">
+            <img class="l--title--logo" src='cid:app-logo'/>
+        </div>
+
+        <h2>Hello {{ createdByDoc.firstName }} {{ createdByDoc.lastName }},</h2>
+
+        <h2>
+            {{ projectTitle }} has been updated by {{ authorDoc.firstName }} {{ authorDoc.lastName }}.
+        </h2>
+
+        <a target="_blank" href="{{projectLink}}"><h2 style="color: blue">Click this link to view project.</h2></a>
+
+        <h2>This is an auto-generated message. For any concerns, please contact the administrator.</h2>
+
+    </div>
+{% endblock %}

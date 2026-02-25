@@ -1,0 +1,4364 @@
+{
+	"info": {
+		"_postman_id": "b8961b9b-1906-481f-bc10-cb3d2e9f5631",
+		"name": "PMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18996941"
+	},
+	"item": [
+		{
+			"name": "Smoketest",
+			"item": [
+				{
+					"name": "test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/utilities/test",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"utilities",
+								"test"
+							]
+						},
+						"description": "Test route"
+					},
+					"response": []
+				},
+				{
+					"name": "emailtest",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/utilities/emailtest",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"utilities",
+								"emailtest"
+							]
+						},
+						"description": "Test route"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authenticate",
+			"item": [
+				{
+					"name": "userRoleLogin",
+					"item": [
+						{
+							"name": "userRoleLogin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"user@mail.com\",\n    \"password\": \"maroon12345\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/account/admin/login",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"account",
+										"admin",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "userRoleLogin:forceful",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"user@mail.com\",\n    \"password\": \"maroon123456\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/account/:_userRole/login?forceful=true",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"account",
+										":_userRole",
+										"login"
+									],
+									"query": [
+										{
+											"key": "forceful",
+											"value": "true"
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "admin"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "userLogin",
+					"item": [
+						{
+							"name": "userLogin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"user@mail.com\",\n    \"password\": \"RaGpKJhZ@764\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/account/login",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"account",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "userLogin:forceful",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"user@mail.com\",\n    \"password\": \"maroon12345\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/account/login?forceful=true",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"account",
+										"login"
+									],
+									"query": [
+										{
+											"key": "forceful",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "logout",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/user/account/logout",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"user",
+								"account",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/user/account/session",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"user",
+								"account",
+								"session"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "View All",
+					"item": [
+						{
+							"name": "viewAllUsers:keyValue pair",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users/_userRole?key=email&value=ella.flores@maroonstudios.com&dataview=admin",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"users",
+										"_userRole"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "email"
+										},
+										{
+											"key": "value",
+											"value": "ella.flores@maroonstudios.com"
+										},
+										{
+											"key": "advancedQuery",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "count",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "asc",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "total",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "admin"
+										},
+										{
+											"key": "search",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllUsers:advancedQuery",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users/:_userRole?advancedQuery={\"email\": \"jason.obrero@maroonstudios.com\"}",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"users",
+										":_userRole"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "value",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "advancedQuery",
+											"value": "{\"email\": \"jason.obrero@maroonstudios.com\"}"
+										},
+										{
+											"key": "start",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "count",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "asc",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "total",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "admin",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "guest"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllUsers:startCount",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users/:_userRole?start=0&count=1",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"users",
+										":_userRole"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "value",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "advancedQuery",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "asc",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "total",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "admin",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "aar",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "0"
+										},
+										{
+											"key": "count",
+											"value": "1"
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "admin"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllUsers:sortBy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users/:_userRole?sortBy=fullName&asc=-1",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"users",
+										":_userRole"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "value",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "advancedQuery",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "count",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "fullName"
+										},
+										{
+											"key": "asc",
+											"value": "-1"
+										},
+										{
+											"key": "total",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "admin",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "jo",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "guest"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllUsers:dataView",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users/:_userRole?dataview=default",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"users",
+										":_userRole"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "value",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "advancedQuery",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "count",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "email",
+											"disabled": true
+										},
+										{
+											"key": "asc",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "total",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "default"
+										},
+										{
+											"key": "search",
+											"value": "",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "guest"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllUsers:dataView&search",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users/:_userRole?dataview=admin&search=aa",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"users",
+										":_userRole"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "value",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "advancedQuery",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "count",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "email",
+											"disabled": true
+										},
+										{
+											"key": "asc",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "total",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "admin"
+										},
+										{
+											"key": "search",
+											"value": "aa"
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "guest"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllUsers:search",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users/:_userRole?search=aa",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"users",
+										":_userRole"
+									],
+									"query": [
+										{
+											"key": "key",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "value",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "advancedQuery",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "count",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "email",
+											"disabled": true
+										},
+										{
+											"key": "asc",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "total",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "default",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "aa"
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "admin"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "View",
+					"item": [
+						{
+							"name": "viewUser:playground",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id?dataview=admin",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"admin",
+										"user",
+										":_userRole",
+										":_id"
+									],
+									"query": [
+										{
+											"key": "updates",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "from",
+											"value": "2021-01-31T13:29:44.279Z",
+											"disabled": true
+										},
+										{
+											"key": "to",
+											"value": "2021-01-31T13:29:44.281Z",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "admin"
+										}
+									],
+									"variable": [
+										{
+											"key": "_userRole",
+											"value": "admin"
+										},
+										{
+											"key": "_id",
+											"value": "60334453011e958073efc7e5"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "createUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"info\": {\n        \"employeeType\": \"Probationary Employee\",\n        \"role\": \"Budget Officer\",\n        \"firstName\": \"A Test\",\n        \"middleName\": \"Middle\",\n        \"lastName\": \"User\",\n        \"position\": \"member\",\n        \"employeeId\": 1230123,\n        \"department\": \"630c3d055aec252bf812fd3c\",\n        \"immediateSupervisor\": \"Rick and Morty\",\n        \"dateOfEmployment\": \"2022-06-15\",\n        \"dateOfBirth\": \"1990-06-15\",\n        \"email\": \"aTestUser@mail.com\",\n        \"mobileNumber\": \"(+63)1234567890\",\n        \"userRole\": [\"budgetOfficer\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createUser (no params)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"info\": {\n        \"firstName\": \"Rick\",\n        \"middleName\": \"Jason\",\n        \"lastName\": \"Obrero\",\n        \"email\": \"rgobrero@up.edu.ph\",\n        \"designation\": \"Sample Designation\",\n        \"department\": \"Sample Department\",\n        \"userRole\": \"admin\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "viewAllUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users?dataview=projectUsers",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"users"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "email",
+									"disabled": true
+								},
+								{
+									"key": "value",
+									"value": "user@mail.com",
+									"disabled": true
+								},
+								{
+									"key": "advancedQuery",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "start",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "count",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "asc",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "total",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "dataview",
+									"value": "admin",
+									"disabled": true
+								},
+								{
+									"key": "dataview",
+									"value": "projectUsers"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "viewAllUsers (no params)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/users?dataview=archivedUsers",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"users"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "email",
+									"disabled": true
+								},
+								{
+									"key": "value",
+									"value": "user@mail.com",
+									"disabled": true
+								},
+								{
+									"key": "advancedQuery",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "start",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "count",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "asc",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "total",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "dataview",
+									"value": "admin",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dataview",
+									"value": "archivedUsers"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "viewUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id"
+							],
+							"query": [
+								{
+									"key": "updates",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "to",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "from",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dataview",
+									"value": "default",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "admin"
+								},
+								{
+									"key": "_id",
+									"value": "630c3d055aec252bf812fd51"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"info\": {\n        \"designation\": \"New Designation\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id"
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "admin"
+								},
+								{
+									"key": "_id",
+									"value": "6038cf7f969c8dd05c2977a4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id"
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "budgetOfficer"
+								},
+								{
+									"key": "_id",
+									"value": "63350d829fec04364cd0033a"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "activate",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activationReason\": \"Suspension lifted.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id/activate",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id",
+								"activate"
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "admin"
+								},
+								{
+									"key": "_id",
+									"value": "6038cc85fc96a3c3b9dd3a08"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deactivate",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"deactivationReason\": \"One week suspension.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id/deactivate",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id",
+								"deactivate"
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "admin"
+								},
+								{
+									"key": "_id",
+									"value": "6038cc85fc96a3c3b9dd3a08"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activationReason\": \"Suspension lifted.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id/delete",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id",
+								"delete"
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "budgetOfficer"
+								},
+								{
+									"key": "_id",
+									"value": "62a95e2961714d29f43c0635"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "soft deleteMany",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ids\": [\"632bea64e7ffe931f4404912\", \"630c3d055aec252bf812fd57\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/multiple/delete",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								"multiple",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "activateMany",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n     \"ids\": [\"632bea64e7ffe931f4404912\", \"630c3d055aec252bf812fd57\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/multiple/activate",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								"multiple",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deactivateMany",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n     \"ids\": [\"632bea64e7ffe931f4404912\", \"630c3d055aec252bf812fd57\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/multiple/deactivate",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								"multiple",
+								"deactivate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "viewVersion",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id/version/:_version",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id",
+								"version",
+								":_version"
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "admin"
+								},
+								{
+									"key": "_id",
+									"value": "60352121b796d193ad1f73a8"
+								},
+								{
+									"key": "_version",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patchVersion",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/admin/user/:_userRole/:_id/version/:_version",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"admin",
+								"user",
+								":_userRole",
+								":_id",
+								"version",
+								":_version"
+							],
+							"variable": [
+								{
+									"key": "_userRole",
+									"value": "admin"
+								},
+								{
+									"key": "_id",
+									"value": "6016fddf5584ab498e142df9"
+								},
+								{
+									"key": "_version",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Password",
+			"item": [
+				{
+					"name": "Change Password",
+					"item": [
+						{
+							"name": "createChangeOTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"iOAc5Jbltp\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/requestchange",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"requestchange"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "changePasswordLoggedIn",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"maroon12345\",\n    \"otp\": \"339790\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/change",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"change"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Reset Password",
+					"item": [
+						{
+							"name": "resetPasswordOTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"user@mail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/requestreset",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"requestreset"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "resetPassword",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"user@mail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/reset?username=user@mail.com&email=rickjasonobrero%40gmail.com&otp=436184",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"reset"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "user@mail.com"
+										},
+										{
+											"key": "email",
+											"value": "rickjasonobrero%40gmail.com"
+										},
+										{
+											"key": "otp",
+											"value": "436184"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "changePasswordReset",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"maroon123456\",\n    \"otp\": \"436184\",\n    \"username\": \"user@mail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/change",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"change"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Forgot Password",
+					"item": [
+						{
+							"name": "resetPasswordOTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"rgobrero@up.edu.ph\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/forgot",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"forgot"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "resetPassword",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"user@mail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/reset?username=user@mail.com&email=rickjasonobrero%40gmail.com&otp=436184",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"reset"
+									],
+									"query": [
+										{
+											"key": "username",
+											"value": "user@mail.com"
+										},
+										{
+											"key": "email",
+											"value": "rickjasonobrero%40gmail.com"
+										},
+										{
+											"key": "otp",
+											"value": "436184"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "changePasswordReset",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"maroon123456\",\n    \"otp\": \"097229\",\n    \"username\": \"rgobrero@up.edu.ph\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/password/change",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"password",
+										"change"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "View",
+					"item": [
+						{
+							"name": "viewUser:playground",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/user/myprofile?dataview=admin",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"user",
+										"myprofile"
+									],
+									"query": [
+										{
+											"key": "updates",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "from",
+											"value": "2021-01-31T13:29:44.279Z",
+											"disabled": true
+										},
+										{
+											"key": "to",
+											"value": "2021-01-31T13:29:44.281Z",
+											"disabled": true
+										},
+										{
+											"key": "dataview",
+											"value": "admin"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "viewProfile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/user/myprofile",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"user",
+								"myprofile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateProfile",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"info\": {\n        \"mobileNumber\": \"(+63)1234567890\",\n        \"employeeId\": 1111111,\n        \"employeeType\": \"Probation\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/user/myprofile",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"user",
+								"myprofile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postOwnProfilePicture",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "profilePicture",
+									"type": "file",
+									"src": "/C:/Users/caraa/Pictures/Saved Pictures/my face.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/user/62a1bc8ab840ab08187b622f/profilePicture",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								"user",
+								"62a1bc8ab840ab08187b622f",
+								"profilePicture"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOwnProfilePicture",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName/:_fileName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName",
+								":_fileName"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "user"
+								},
+								{
+									"key": "_id",
+									"value": "62a1bc8ab840ab08187b622f"
+								},
+								{
+									"key": "_fieldName",
+									"value": "profilePicture"
+								},
+								{
+									"key": "_fileName",
+									"value": "1655222847356_my face.jpg"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOwnProfilePicture",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName/:_fileName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName",
+								":_fileName"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "user"
+								},
+								{
+									"key": "_id",
+									"value": "62a1bc8ab840ab08187b622f"
+								},
+								{
+									"key": "_fieldName",
+									"value": "profilePicture"
+								},
+								{
+									"key": "_fileName",
+									"value": "1655253699025_my face.jpg"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Role",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roleName\": \"sample\",\n    \"features\": [\n        \"loginByUserRole\",\n        \"login\",\n        \"logout\",\n        \"session\",\n        \"verifyEmail\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/config/roleaccess",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"config",
+								"roleaccess"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "viewAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/config/roleaccess",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"config",
+								"roleaccess"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "view",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/config/roleaccess/:_roleName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"config",
+								"roleaccess",
+								":_roleName"
+							],
+							"variable": [
+								{
+									"key": "_roleName",
+									"value": "sample"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "session",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/config/roleaccess/session",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"config",
+								"roleaccess",
+								"session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"features\": [\n        {\n            \"value\": \"loginByUserRole\",\n            \"available\": false\n        }\n    ],\n    \"label\": \"sample\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/config/roleaccess/:_roleName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"config",
+								"roleaccess",
+								":_roleName"
+							],
+							"variable": [
+								{
+									"key": "_roleName",
+									"value": "sample"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/config/roleaccess/:_roleName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"config",
+								"roleaccess",
+								":_roleName"
+							],
+							"variable": [
+								{
+									"key": "_roleName",
+									"value": "sample"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Base CRUD",
+			"item": [
+				{
+					"name": "Accounting Management",
+					"item": [
+						{
+							"name": "GetYears Accounting Management",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/accountingManagement/years/:_status",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"accountingManagement",
+										"years",
+										":_status"
+									],
+									"variable": [
+										{
+											"key": "_status",
+											"value": "active"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create accounting management",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"project\": \"634508f8eb77a6282040d4f5\",\r\n    \"totalActualRelease\": 10000,\r\n    \"totalAccountPayable\": 10000,\r\n    \"totalActualDisbursed\": 10000,\r\n    \"totalUnreleased\": 10000,\r\n    \"remarks\": \"Sample\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/accountingManagement",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"accountingManagement"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Accounting Management",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/accountingManagement?dataview=archivedList&advancedQuery=%7B%0A%20%20%22quarter%22%3A%20%224%22%2C%0A%20%20%22year%22%3A%20%222022%22%0A%7D",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"accountingManagement"
+									],
+									"query": [
+										{
+											"key": "dataview",
+											"value": "archivedList"
+										},
+										{
+											"key": "advancedQuery",
+											"value": "%7B%0A%20%20%22quarter%22%3A%20%224%22%2C%0A%20%20%22year%22%3A%20%222022%22%0A%7D"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View by Id Accounting Management",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/accountingManagement/6347a16ae01f293308f0f469",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"accountingManagement",
+										"6347a16ae01f293308f0f469"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Accounting Management Documents",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "documents",
+											"type": "file",
+											"src": "/C:/Users/MaroonStudios/Downloads/sample5.pdf"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										":_model",
+										":_id",
+										":_fieldName"
+									],
+									"variable": [
+										{
+											"key": "_model",
+											"value": "accountingManagement"
+										},
+										{
+											"key": "_id",
+											"value": "6347a5b0625e122f203edb88"
+										},
+										{
+											"key": "_fieldName",
+											"value": "documents"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Multiple Operate Attachment Accounting Management",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fileNames\": [\r\n        \"1665639511984_sample5.pdf\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/accountingManagement/:_id/:_fieldName/:_operate/multiple",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										"accountingManagement",
+										":_id",
+										":_fieldName",
+										":_operate",
+										"multiple"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": "6347a16ae01f293308f0f469"
+										},
+										{
+											"key": "_fieldName",
+											"value": "documents"
+										},
+										{
+											"key": "_operate",
+											"value": "archive"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Budget Management",
+					"item": [
+						{
+							"name": "GetYears Budget Management",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/budgetManagement/years/:_status",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"budgetManagement",
+										"years",
+										":_status"
+									],
+									"variable": [
+										{
+											"key": "_status",
+											"value": "active"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Budget Management",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/budgetManagement?advancedQuery=%7B%0A%20%20%22quarter%22%3A%20%224%22%2C%0A%20%20%22year%22%3A%20%222022%22%0A%7D",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"budgetManagement"
+									],
+									"query": [
+										{
+											"key": "advancedQuery",
+											"value": "%7B%0A%20%20%22quarter%22%3A%20%224%22%2C%0A%20%20%22year%22%3A%20%222022%22%0A%7D"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Budget Management Documents",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "documents",
+											"type": "file",
+											"src": "/C:/Users/MaroonStudios/Downloads/sample3.pdf"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										":_model",
+										":_id",
+										":_fieldName"
+									],
+									"variable": [
+										{
+											"key": "_model",
+											"value": "budgetManagement"
+										},
+										{
+											"key": "_id",
+											"value": "634cae3799c24b1c5c7a6b73"
+										},
+										{
+											"key": "_fieldName",
+											"value": "documents"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Operate Attachment Budget Management",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fileNames\": [\r\n        \"1665970581675_sample3.pdf\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName/:_operate/multiple",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										":_model",
+										":_id",
+										":_fieldName",
+										":_operate",
+										"multiple"
+									],
+									"variable": [
+										{
+											"key": "_model",
+											"value": "budgetManagement"
+										},
+										{
+											"key": "_id",
+											"value": "634cae3799c24b1c5c7a6b73"
+										},
+										{
+											"key": "_fieldName",
+											"value": "documents"
+										},
+										{
+											"key": "_operate",
+											"value": "archive"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create budget management",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"project\": \"634f40e52db3391710f3814c\",\r\n    \"budgetPerformance\": 1234567.22,\r\n    \"approvedBudget\": 1234567,\r\n    \"releasedBudget\": 1,\r\n    \"disbursedBudget\": 12345678.22,\r\n    \"accountsPayable\": 1,\r\n    \"balance\": 1,\r\n    \"disbursementRate\": 1,\r\n    \"expenditureRate\": 1,\r\n    \"budgetUtilization\": 1,\r\n    \"remarks\": \"remarks\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/budgetManagement",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"budgetManagement"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete budget management Copy",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/budgetManagement/634cae3799c24b1c5c7a6b73",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"budgetManagement",
+										"634cae3799c24b1c5c7a6b73"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "activate budget management",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"project\": \"6347a585625e122f203edb51\",\r\n    \"budgetPerformance\": 1234222222\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/budgetManagement/634cae3799c24b1c5c7a6b73/activate",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"budgetManagement",
+										"634cae3799c24b1c5c7a6b73",
+										"activate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "activateMany budgetManagement",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ids\": [\r\n        \"634cae3799c24b1c5c7a6b73\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/budgetManagement/multiple/activate",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"budgetManagement",
+										"multiple",
+										"activate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Cash Management",
+					"item": [
+						{
+							"name": "View All Cash Management",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/cashManagement?dataview=documents",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"cashManagement"
+									],
+									"query": [
+										{
+											"key": "dataview",
+											"value": "documents"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Cash Management Documents",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "documents",
+											"type": "file",
+											"src": "/C:/Users/MaroonStudios/Downloads/pexels-karolina-grabowska-4021773.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/cashManagement/:_project/:_fieldName",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										"cashManagement",
+										":_project",
+										":_fieldName"
+									],
+									"variable": [
+										{
+											"key": "_project",
+											"value": "632c05ebe1596131447efe39"
+										},
+										{
+											"key": "_fieldName",
+											"value": "documents"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Operate Attachment Budget Management",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"fileNames\": [\r\n        \"1663824528326_pexels-karolina-grabowska-4021773.jpg\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/cashManagement/:_id/:_fieldName/:_operate/multiple",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										"cashManagement",
+										":_id",
+										":_fieldName",
+										":_operate",
+										"multiple"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": "632bf288b633cd439c4ca2cd"
+										},
+										{
+											"key": "_fieldName",
+											"value": "documents"
+										},
+										{
+											"key": "_operate",
+											"value": "activate"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Campus",
+					"item": [
+						{
+							"name": "View By Id Campus",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/campus/:_id",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"campus",
+										":_id"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": "633f776fcc9d502f70216daf"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Campus",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/campus",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"campus"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Campus",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"name\": \"ISCP\",\n   \"code\": \"14344\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/campus",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"campus"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Campus",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"UA\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/campus/633f776fcc9d502f70216daf",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"campus",
+										"633f776fcc9d502f70216daf"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Campus",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/campus/633f776fcc9d502f70216daf",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"campus",
+										"633f776fcc9d502f70216daf"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Equipment",
+					"item": [
+						{
+							"name": "View By Id Equipment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/equipment/:_id",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"equipment",
+										":_id"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Equipment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/equipment",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"equipment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Equipment",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"name\": \"Equipment 01\",\n   \"quantity\": 100,\n   \"availability\": \"Not Available\",\n   \"notAvailableReason\": \"Sample not available.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/equipment",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"equipment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Equipment",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"availability\": \"Available\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/equipment/633e7d701387bb2668b6c6ea",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"equipment",
+										"633e7d701387bb2668b6c6ea"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Equipment",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/equipment/633e362350f12b333c2c2500",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"equipment",
+										"633e362350f12b333c2c2500"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Project",
+					"item": [
+						{
+							"name": "View All Project",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/project?dataview=table&year=2022&quarter=4",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"project"
+									],
+									"query": [
+										{
+											"key": "dataview",
+											"value": "table"
+										},
+										{
+											"key": "year",
+											"value": "2022"
+										},
+										{
+											"key": "quarter",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetYears Project",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/project/years/active",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"project",
+										"years",
+										"active"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "taggedDocuments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/project?dataview=taggedArchivedFiles&project=6319947a8a0e613548ce99fa",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"project"
+									],
+									"query": [
+										{
+											"key": "dataview",
+											"value": "taggedArchivedFiles",
+											"description": "possible values: [\"taggedDocuments\", taggedArchivedDocuments\"]"
+										},
+										{
+											"key": "project",
+											"value": "6319947a8a0e613548ce99fa"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View Project by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/project/:_id",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"project",
+										":_id"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": "633fc1dae908932cccb1d4de"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Project",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"project 2\",\n    \"objective\": \"objective\",\n    \"description\": \"description\",\n    \"status\": \"Not Yet Started\",\n    \"projectType\": \"6344ed8ab95dff40f8ca83b7\",\n    \"departments\": [ \"6344eb08b96b612620e1c5cc\" ],\n    \"members\": [\"6344eb08b96b612620e1c5e5\"],\n    \"expectedStartDate\": \"2022/10/11\",\n    \"expectedCompletionDate\": \"2022/10/12\",\n    \"equipments\": [\n        {\n            \"_id\": \"634507faeb77a6282040d485\",\n            \"name\": \"Equipment 01\",\n            \"quantity\": 1\n        }\n    ],\n    \"remarks\": [\n        {\n            \"message\": \"first commit\"\n        }\n    ],\n    \"campus\": \"634508e6eb77a6282040d4e7\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/project",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"project"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Project",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"budgetManagement\": \"634d21809afee3d9fe0390ee\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/project/6347a585625e122f203edb51",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"project",
+										"6347a585625e122f203edb51"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Project",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/project/633fa31e457b1a2da06dafb9",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"project",
+										"633fa31e457b1a2da06dafb9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Multiple Operate Attachment taggedDocuments",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"taggedDocuments\": [\r\n        {\r\n            \"filename\": \"1663824457421_pexels-karolina-grabowska-4021773.jpg\",\r\n            \"model\": \"budgetManagement\",\r\n            \"documentId\": \"632bf249e6c0bc044429429e\"\r\n        },\r\n        {\r\n            \"filename\": \"1663549147751_pexels-karolina-grabowska-4021773.jpg\",\r\n            \"model\": \"accountingManagement\",\r\n            \"documentId\": \"6327b8dcfc7d860a84adc736\"\r\n        },\r\n        {\r\n            \"filename\": \"1663824528326_pexels-karolina-grabowska-4021773.jpg\",\r\n            \"model\": \"cashManagement\",\r\n            \"documentId\": \"632bf288b633cd439c4ca2cd\"\r\n        },\r\n        {\r\n            \"filename\": \"1663943814068_sample.pdf\",\r\n            \"model\": \"accountingManagement\",\r\n            \"documentId\": \"6327b8dcfc7d860a84adc736\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/project/:_id/:_fieldName/:_operate/multiple",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										"project",
+										":_id",
+										":_fieldName",
+										":_operate",
+										"multiple"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": "6319947a8a0e613548ce99fa"
+										},
+										{
+											"key": "_fieldName",
+											"value": "documents"
+										},
+										{
+											"key": "_operate",
+											"value": "archive"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Project Documents",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "billOfQuantity",
+											"type": "file",
+											"src": "/C:/Users/MaroonStudios/Downloads/sample5.pdf"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/project/:_id/:_fieldName",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"attachment",
+										"project",
+										":_id",
+										":_fieldName"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": "634508f8eb77a6282040d4f5"
+										},
+										{
+											"key": "_fieldName",
+											"value": "billOfQuantity"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Project Task",
+					"item": [
+						{
+							"name": "View Project Task",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"title 1\",\n    \"objective\": \"objective\",\n    \"description\": \"description\",\n    \"projectCategory\": \"projectCategory\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectTask",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectTask"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Project Task",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Task 3\",\n    \"status\": \"Not Yet Started\",\n    \"description\": \"description\",\n    \"project\": \"634508f8eb77a6282040d4f5\",\n    \"remarks\": [\n        {\n            \"message\": \"hello\"\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectTask",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectTask"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Project Task",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"My Task 1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectTask/62abd74e659db92d70d7ae48",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectTask",
+										"62abd74e659db92d70d7ae48"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Project Task",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectTask/63478c2c8564481144a0fc61",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectTask",
+										"63478c2c8564481144a0fc61"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Line Item Budget",
+					"item": [
+						{
+							"name": "View By Id Line Item Budget",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/lineItemBudget/:_id",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"lineItemBudget",
+										":_id"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": "6316dc923688de0aec796e53"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Line Item Budget",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/lineItemBudget",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"lineItemBudget"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Line Item Budget",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"project\": \"634508f8eb77a6282040d4f5\",\n    \"budgets\": [\n        {\n            \"itemType\": \"Meals\",\n            \"items\": [\n                {\n                    \"name\": \"Participants\",\n                    \"quantity\": 150,\n                    \"pshsFund\": 120,\n                    \"otherFund\": 120,\n                    \"amount\": 500,\n                    \"remarks\": \"remark\"\n                },\n                {\n                    \"name\": \"Staff\",\n                    \"quantity\": 150,\n                    \"pshsFund\": 100,\n                    \"otherFund\": 120,\n                    \"amount\": 200,\n                    \"remarks\": \"sdfafafa\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/lineItemBudget",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"lineItemBudget"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Line Item Budget",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"budgets\": [\n        {\n            \"itemType\": \"Meals\",\n            \"items\": [\n                {\n                    \"name\": \"Participants\",\n                    \"quantity\": 151,\n                    \"pshsFund\": 0,\n                    \"otherFund\": 500,\n                    \"remarks\": \"remark\"\n                },\n                {\n                    \"name\": \"Staff\",\n                    \"quantity\": 150,\n                    \"pshsFund\": 500,\n                    \"otherFund\": 200,\n                    \"remarks\": \"sdfafafa\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/lineItemBudget/631996e51ebef11b44ce00e4",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"lineItemBudget",
+										"631996e51ebef11b44ce00e4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete lineItemBudget",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"budgets\": [\n        {\n            \"itemType\": \"Meals\",\n            \"items\": [\n                {\n                    \"name\": \"Participants\",\n                    \"quantity\": 151,\n                    \"pshsFund\": 0,\n                    \"otherFund\": 500,\n                    \"remarks\": \"remark\"\n                },\n                {\n                    \"name\": \"Staff\",\n                    \"quantity\": 150,\n                    \"pshsFund\": 500,\n                    \"otherFund\": 200,\n                    \"remarks\": \"sdfafafa\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/lineItemBudget/6343b4b40905e921ec523f8c",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"lineItemBudget",
+										"6343b4b40905e921ec523f8c"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actual Expenses",
+					"item": [
+						{
+							"name": "View By Id Actual Expenses",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/actualExpenses/63198da063dd1c3720cd3413",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"actualExpenses",
+										"63198da063dd1c3720cd3413"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Actual Expenses",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/actualExpenses",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"actualExpenses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Actual Expenses",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"expenses\": [\n        {\n            \"itemType\": \"Meals\",\n            \"items\": [\n                {\n                    \"name\": \"Participants\",\n                    \"quantity\": 150,\n                    \"actualExpenses\": 500,\n                    \"remarks\": \"remark\"\n                }\n            ]\n        }\n    ],\n    \"project\": \"6319947a8a0e613548ce99fa\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/actualExpenses",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"actualExpenses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Actual Expenses",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"expenses\": [\n        {\n            \"itemType\": \"Meals\",\n            \"items\": [\n                {\n                    \"name\": \"Participants\",\n                    \"quantity\": 149,\n                    \"actualExpenses\": 500,\n                    \"remarks\": \"remark\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/actualExpenses/63198da063dd1c3720cd3413",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"actualExpenses",
+										"63198da063dd1c3720cd3413"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete actualExpenses",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"budgets\": [\n        {\n            \"itemType\": \"Meals\",\n            \"items\": [\n                {\n                    \"name\": \"Participants\",\n                    \"quantity\": 151,\n                    \"pshsFund\": 0,\n                    \"otherFund\": 500,\n                    \"remarks\": \"remark\"\n                },\n                {\n                    \"name\": \"Staff\",\n                    \"quantity\": 150,\n                    \"pshsFund\": 500,\n                    \"otherFund\": 200,\n                    \"remarks\": \"sdfafafa\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/actualExpenses/632978ba0bfe241d90eb0ac1",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"actualExpenses",
+										"632978ba0bfe241d90eb0ac1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Item Type",
+					"item": [
+						{
+							"name": "View By Id Item Type",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/itemType/:_id",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"itemType",
+										":_id"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Item Type",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/itemType",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"itemType"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Item Type",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"itemType\": \"Courier Service\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/itemType",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"itemType"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Item Type",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"itemType\": \"Awards\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/itemType/6316d761904e840ac85d2e55",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"itemType",
+										"6316d761904e840ac85d2e55"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Item Type",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/itemType/62abd72b659db92d70d7ae3f",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"itemType",
+										"62abd72b659db92d70d7ae3f"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Project Type",
+					"item": [
+						{
+							"name": "View By Id Project Type",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectType/:_id",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectType",
+										":_id"
+									],
+									"variable": [
+										{
+											"key": "_id",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Project Type",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectType",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectType"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Project Type",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"name\": \"Research and Development\",\n   \"description\": \"Aims to research.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectType",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectType"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Project Type",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Research and Development\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectType/63194016dd2fe40b7c95e333",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectType",
+										"63194016dd2fe40b7c95e333"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Project Type",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/projectType/62abd72b659db92d70d7ae3f",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"projectType",
+										"62abd72b659db92d70d7ae3f"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Deparment",
+					"item": [
+						{
+							"name": "View By Id Department",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/department/630c3d055aec252bf812fd3c",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"department",
+										"630c3d055aec252bf812fd3c"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View All Department",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/department",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"department"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Department",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n   \"name\": \"Science\",\n   \"description\": \"Gathers knowledge.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/department",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"department"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Department",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Finance\",\n    \"description\": \"Manages money.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/department/6319416edd2fe40b7c95e34e",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"department",
+										"6319416edd2fe40b7c95e34e"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Project Type",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}:{{port}}{{baseUrl}}/department/6319416edd2fe40b7c95e34e",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{port}}{{baseUrl}}",
+									"path": [
+										"department",
+										"6319416edd2fe40b7c95e34e"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Vanilla base CRUD."
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Create Report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quarter\": \"4\",\r\n    \"year\": \"2022\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/report/:_reportName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"report",
+								":_reportName"
+							],
+							"variable": [
+								{
+									"key": "_reportName",
+									"value": "project"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Attachments",
+			"item": [
+				{
+					"name": "Upload Budget Management",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "documents",
+									"type": "file",
+									"src": "/C:/Users/MaroonStudios/Downloads/pexels-karolina-grabowska-4021773.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "budgetManagement"
+								},
+								{
+									"key": "_id",
+									"value": "63183cc9b981a30414c81643"
+								},
+								{
+									"key": "_fieldName",
+									"value": "documents"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download attachment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "documents",
+									"type": "file",
+									"src": "/C:/Users/MaroonStudios/Downloads/pexels-karolina-grabowska-4021773.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName/:_fileName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName",
+								":_fileName"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "project"
+								},
+								{
+									"key": "_id",
+									"value": "634383287653673c1438403a"
+								},
+								{
+									"key": "_fieldName",
+									"value": "documents"
+								},
+								{
+									"key": "_fileName",
+									"value": "1665371930386_sample3.pdf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Cash Management",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "documents",
+									"type": "file",
+									"src": "/C:/Users/MaroonStudios/Downloads/pexels-karolina-grabowska-4021773.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "cashManagement"
+								},
+								{
+									"key": "_id",
+									"value": "63183e43b981a30414c8168b"
+								},
+								{
+									"key": "_fieldName",
+									"value": "documents"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update originalname",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"newOriginalName\": \"pexels-karolina-grabowska.jpg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName/:_fileName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName",
+								":_fileName"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "budgetManagement"
+								},
+								{
+									"key": "_id",
+									"value": "63183cc9b981a30414c81643"
+								},
+								{
+									"key": "_fieldName",
+									"value": "documents"
+								},
+								{
+									"key": "_fileName",
+									"value": "1662533107263_pexels-karolina-grabowska-4021773.jpg"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attachment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName/:_index/:_fileName",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName",
+								":_index",
+								":_fileName"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "project"
+								},
+								{
+									"key": "_id",
+									"value": "634508f8eb77a6282040d4f5"
+								},
+								{
+									"key": "_fieldName",
+									"value": "billOfQuantity"
+								},
+								{
+									"key": "_index",
+									"value": "0"
+								},
+								{
+									"key": "_fileName",
+									"value": "1666235477235_sample5.pdf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Multiple Operate Attachment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fileNames\": [\r\n        \"1665371930386_sample3.pdf\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/attachment/:_model/:_id/:_fieldName/:_operate/multiple",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"attachment",
+								":_model",
+								":_id",
+								":_fieldName",
+								":_operate",
+								"multiple"
+							],
+							"variable": [
+								{
+									"key": "_model",
+									"value": "project"
+								},
+								{
+									"key": "_id",
+									"value": "634383287653673c1438403a"
+								},
+								{
+									"key": "_fieldName",
+									"value": "documents"
+								},
+								{
+									"key": "_operate",
+									"value": "activate"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "overdueNotification",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/overdueNotification",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"overdueNotification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch overdueNotification",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"overdueNotification\": \"tomorrow\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/overdueNotification",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"overdueNotification"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/dashboard",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "overdue",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}:{{port}}{{baseUrl}}/dashboard/overdue",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}{{baseUrl}}",
+							"path": [
+								"dashboard",
+								"overdue"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

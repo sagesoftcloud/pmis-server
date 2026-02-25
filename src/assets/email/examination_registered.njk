@@ -1,0 +1,35 @@
+{% extends "./base.njk" %}
+
+<!--
+- File name: examination_registered.njk
+- Program description:
+- Email notif for failing the exam
+- 
+- <Code details in specific>
+- 
+- Module Exports:
+- - examination_registered.njk: Uses the base.njk then provide
+- a template to be used by the mailer module to send
+- notification to a user that he/she registred to an exam
+-->
+
+
+{% block content %}
+    <div class="l--body">
+        <img class="l--title--logo" src='cid:app-logo'/>
+
+        <h2>{{message}}</h2>
+
+        <br/>
+        <h2 style="font-size:16px;"><b>Applicant:</b> {{userObject.firstName}} {{userObject.lastName}}</h2>
+        <h2 style="font-size:16px;"><b>Exam:</b> {{examName}}</h2>
+        <h2 style="font-size:16px;"><b>Testing Center:</b> {{centerName}}</h2>
+        <h2 style="font-size:16px;"><b>Date:</b> {{date}}</h2>
+        <h2 style="font-size:16px;"><b>Time:</b> {{time}}</h2>
+        <br/>
+        <h2>
+          This is an auto-generated message. For any concerns, please contact the AES System Administrator.
+        </h2>
+    </div>
+{% endblock %}
+                 

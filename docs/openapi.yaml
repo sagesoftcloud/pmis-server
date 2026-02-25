@@ -1,0 +1,5625 @@
+openapi: 3.0.0
+info:
+  title: Project Monitoring System (PMS) API
+  description: API documentation for the PMS backend codebase.
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: http://maroonstudios.com
+    email: support@maroonstudios.com
+servers:
+  - url: http://localhost:3001/webapi
+    description: Local instance
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Roles:
+      type: string
+      enum:
+      - accountingOfficer
+      - admin
+      - budgetOfficer
+      - cashier
+      - director
+      - guest
+      - hrOfficer
+      - inventoryOfficer
+      - procurementOfficer
+      - projectLeader
+    CellphoneNumber:
+      type: string
+      example: '(+63)1234567890'
+    GeneralError:
+      type: object
+      properties:
+        message:
+          type: string
+    SmoketestEmail:
+      type: object
+      properties:
+        message:
+          type: string
+          default: "Test email should have been sent."
+    SmoketestUserCount:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "This count may include users for internal purposes."
+        userCount:
+          type: integer
+          format: int32
+          example: 3
+    SmoketestGetCurrentTime:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Current time successfully sent."
+        currentTime:
+          type: string
+          example: "2022-07-28T02:02:09.594Z"
+    User:
+      type: object
+      required:
+        - employeeType
+        - role
+        - firstName
+        - lastName
+        - position
+        - employeeId
+        - department
+        - immediateSupervisor
+        - dateOfEmployment
+        - dateOfBirth
+        - email
+        - mobileNumber
+        - userRole
+      properties:
+        employeeType:
+          type: string
+          enum:
+          - 'Probationary Employee'
+          - 'Regular Employee'
+          - 'Term Employee'
+          - 'Project Employee'
+        role:
+          type: string
+          enum:
+          - 'IT Admin'
+          - 'Budget Officer'
+          - 'HR Officer'
+          - 'Director'
+          - 'Procurement Officer'
+          - 'Supply and Inventory Officer'
+          - 'Accounting Unit Head/Officer'
+        firstName:
+          type: string
+          example: 'John'
+        middleName:
+          type: string
+          example: 'Smith'
+        lastName:
+          type: string
+          example: 'Doe'
+        position:
+          type: string
+          example: 'Head'
+        employeeId:
+          type: string
+          example: '123123'
+        department:
+          type: string
+          example: '62d9f957940ba73bf6f1a061'
+        immediateSupervisor:
+          type: string
+          example: 'average Joe'
+        dateOfEmployment:
+          type: string
+          example: '2020-04-25'
+        dateOfBirth:
+          type: string
+          example: '1990-04-25'
+        email:
+          type: string
+          example: 'johndoe@email.com'
+        mobileNumber:
+          $ref: '#/components/schemas/CellphoneNumber'
+        userRole:
+          type: array
+          items:
+            type: string
+            example: 'admin'
+
+security:
+  - bearerAuth: []
+tags:
+  - name: smoketest
+    description: Api test
+  - name: Account Management
+    description: Management of the user's account
+  - name: User Management
+    description: Management of the users
+paths:
+  # smoketest
+  /utilities/test:
+    get:
+      tags:
+        - smoketest
+      summary: Returns a generic test message.
+      responses:
+        200:
+          description: "Hello, world!"
+          content:
+            application/json:
+              schema:
+                type: string
+                default: "Hello, world!"
+  /utilities/emailtest:
+    get:
+      tags:
+        - smoketest
+      summary: Returns a message that an email has been sent to a hard-coded email address.
+      responses:
+        200:
+          description: "Test email should have been sent."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmoketestEmail'
+        400:
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralError'
+  /utilities/usercount:
+    get:
+      tags:
+        - smoketest
+      summary: Returns a message with the total number of users currently in the database.
+      responses:
+        200:    # status code
+          description: A message with the total number of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmoketestUserCount'
+        400:
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralError'
+  /utilities/getCurrentTime:
+    get:
+      tags:
+        - smoketest
+      summary: Returns a message with the current system time.
+      responses:
+        200:    # status code
+          description: A message with the current system time.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmoketestGetCurrentTime'
+        400:
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralError'
+
+  # Account Management
+  /user/account/login:
+    post:
+      tags:
+        - Account Management
+      summary: Create JWT token with username and password.
+      security: []
+      operationId: userLogin
+      description: Login with username and password and creates a session.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request. Invalid credentials.
+      requestBody:
+        description: Login with username and password.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: 'user@mail.com'
+                password:
+                  type: string
+                  example: 'RaGpKJhZ@764'
+  /user/account/logout:
+    get:
+      tags:
+        - Account Management
+      summary: Logout user.
+      security:
+        - bearerAuth: []
+      operationId: userLogout
+      description: Logout user.
+      responses:
+        200:
+          description: OK
+        403:
+          description: Forbidden. User has no token.
+  /user/account/createsession:
+    post:
+      tags:
+        - Account Management
+      summary: Creates a new session for guest.
+      operationId: createsession
+      description: Creates a new session for guest.
+      responses:
+        201:
+          description: Created. Guest session created.
+        400:
+          description: Error
+  /user/password/requestchange:
+    post:
+      tags:
+        - Account Management
+      summary: Request for password change.
+      security:
+        - bearerAuth: []
+      operationId: requestChange
+      description: Request for password change then receive an otp.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request. Invalid credentials.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: 'maroon12345'
+        description: Request for password change.
+  /user/password/change:
+    post:
+      tags:
+        - Account Management
+      summary: Change password.
+      security:
+        - bearerAuth: []
+      operationId: changePassword
+      description: Change password.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request.
+        403:
+          description: Forbidden.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: 'user@mail.com'
+                password:
+                  type: string
+                  example: 'Maroon12345!'
+                otp:
+                  type: string
+                  example:
+                    '1234'
+        description: Change password.
+  /user/password/forgot:
+    post:
+      tags:
+        - Account Management
+      summary: Send a forgot password request.
+      security:
+        - bearerAuth: []
+      operationId: forgotPassword
+      description: Send a forgot password request.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request.
+        403:
+          description: Forbidden.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: 'user@mail.com'
+        description: Send a forgot password request and receive OTP.
+  /user/password/reset:
+    get:
+      tags:
+        - Account Management
+      summary: Checks if OTP and username matches.
+      security:
+        - bearerAuth: []
+      operationId: resetPassword
+      description: Checks if OTP and username matches.
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: otp
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request.
+        403:
+          description: Forbidden.
+  /user/myprofile:
+    get:
+      tags:
+        - Account Management
+      summary: View own profile.
+      security:
+        - bearerAuth: []
+      operationId: viewOwnProfile
+      description: View own profile.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request.
+        403:
+          description: Forbidden.
+    patch:
+      tags:
+        - Account Management
+      summary: Update own profile.
+      security:
+        - bearerAuth: []
+      operationId: updateOwnProfile
+      description: Update own profile.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                info:
+                  type: object
+                  properties:
+                    mobileNumber:
+                      type: string
+                      example: '(+63)1234567891'
+                    zoom:
+                      type: integer
+                      example: 80
+        description: Send a forgot password request and receive OTP.
+
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request.
+        403:
+          description: Forbidden.
+  /attachment/user/{_id}/profilePicture:
+    post:
+      tags:
+        - Account Management
+      summary: Upload profile picture.
+      operationId: postOwnProfilePicture
+      description: Upload profile picture.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+      parameters:
+        - in: path
+          name: _id
+          description: ObjectID of User.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profilePicture:
+                  type: string
+                  format: binary
+  /attachment/user/{_id}/profilePicture/{_fileName}:
+    get:
+      tags:
+        - Account Management
+      summary: Download profile picture.
+      operationId: getOwnProfilePicture
+      description: Download profile picture.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+      parameters:
+        - in: path
+          name: _id
+          description: ObjectID of User.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: _fileName
+          description: Name of the file.
+          required: true
+          schema:
+            type: string
+    delete:
+      tags:
+        - Account Management
+      summary: Delete profile picture.
+      operationId: deleteOwnProfilePicture
+      description: Delete profile picture.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+      parameters:
+        - in: path
+          name: _id
+          description: ObjectID of User.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: _fileName
+          description: Name of the file.
+          required: true
+          schema:
+            type: string
+
+  # User Management
+  /admin/users:
+    get:
+      tags:
+        - User Management
+      summary: View all users.
+      operationId: viewUsers
+      description: View all users from the database.
+      responses:
+        200:
+          description: Total Count and Object/s in JSON format.
+        400:
+          description: Invalid input.
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+              - projectUsers
+              - archivedUsers
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+    post:
+      tags:
+        - User Management
+      summary: Creates a new user.
+      operationId: createUser
+      description: Creates a new user and adds it to the database.
+      responses:
+        201:
+          description: User has been created.
+        400:
+          description: User creation error.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                info:
+                  $ref: '#/components/schemas/User'
+  /admin/users/{_userRole}:
+    get:
+      tags:
+        - User Management
+      summary: View all users with selected user role.
+      operationId: viewUsersWithRole
+      description: View all users with selected user role from the database.
+      parameters:
+        - in: path
+          name: _userRole
+          description: User's role.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          example: 'default'
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Total Count and Object/s in JSON format.
+        400:
+          description: Invalid input.
+    post:
+      tags:
+        - User Management
+      summary: Creates a new user with selected role.
+      operationId: createUserWithRole
+      description: Creates a new user with selected role and adds it to the database.
+      parameters:
+        - in: path
+          name: _userRole
+          description: New user's role.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+      responses:
+        201:
+          description: User has been created.
+        400:
+          description: User creation error.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/User'
+  /admin/user/{_userRole}/{_id}:
+    get:
+      tags:
+        - User Management
+      summary: View user with user role and ID.
+      operationId: viewUser
+      description: View a specific user with user role and ID from the database.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass user role.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+        - in: path
+          name: _id
+          description: Pass user ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Object/s in JSON format and update history.
+        400:
+          description: Invalid input.
+    patch:
+      tags:
+        - User Management
+      summary: Updates user with user role and ID.
+      operationId: updateUser
+      description: Updates a specific user with user role and ID from the database.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass user role.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+        - in: path
+          name: _id
+          description: Pass user ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User has been updated and Updated User in JSON format.
+        400:
+          description: Invalid input.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/User'
+    delete:
+      tags:
+        - User Management
+      summary: Deletes user with user role and ID.
+      operationId: deleteUser
+      description: Deletes a specific user with user role and ID from the database.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass user role.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+        - in: path
+          name: _id
+          description: Pass user ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'User has been deleted.'
+        400:
+          description: Invalid input.
+  /admin/user/{_userRole}/{_id}/activate:
+    patch:
+      tags:
+        - User Management
+      summary: Activates a user.
+      operationId: activateUser
+      description: Activates user from the database.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass user role.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+        - in: path
+          name: _id
+          description: Pass user ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User has been activated and activated user in JSON Object.
+        400:
+          description: Invalid input.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                activationReason: 'Activated for some reason.'
+  /admin/user/{_userRole}/{_id}/deactivate:
+    patch:
+      tags:
+        - User Management
+      summary: Activates a user.
+      operationId: deactivateUser
+      description: Activates user from the database.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass user role.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+        - in: path
+          name: _id
+          description: Pass user ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User has been deactivated and deactivated user in JSON Object.
+        400:
+          description: Invalid input.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                deactivationReason: 'Deactivated for some reason.'
+
+  # Role
+  /config/roleaccess/session:
+    get:
+      tags:
+        - Role
+      summary: Check session privilege.
+      operationId: checkSessionPrivilege
+      description: Check session privilege from the database.
+      responses:
+        200:
+          description: Object/s in JSON format.
+        400:
+          description: Invalid input.
+  /config/roleaccess/{_userRole}:
+    get:
+      tags:
+        - Role
+      summary: View privilege summary of a user role.
+      operationId: viewRolePrivilege
+      description: View privilege summary of user role.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass a user role to view privilege.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+      responses:
+        200:
+          description: Object/s in JSON format.
+        400:
+          description: Invalid input.
+    patch:
+      tags:
+        - Role
+      summary: Adds a privilege for a user role.
+      operationId: addRolePrivilege
+      description: Adds a privilege for a user role.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass the user role to update.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Roles'
+      responses:
+        200:
+          description: User role named `_userRole` has been updated.
+        400:
+          description: Invalid input.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                features: '/myprofile'
+                label: 'user'
+    delete:
+      tags:
+        - Role
+      summary: Deletes a user role.
+      operationId: deleteUserRole
+      description: Deletes a user role.
+      parameters:
+        - in: path
+          name: _userRole
+          description: Pass the user role to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Object/s in JSON format.
+        400:
+          description: Invalid input.
+  /config/roleaccess/multiple/{_operation}:
+    patch:
+      tags:
+        - Role
+      summary: Bulk operates on roles.
+      operationId: multipleOperateRole
+      description: Bulk operates on roles.
+      parameters:
+        - in: path
+          name: _operation
+          description: Pass the operation.
+          required: true
+          schema:
+            type: string
+            enum:
+              - delete
+              - activate
+      responses:
+        200:
+          description: User role(s) have been archived.
+        400:
+          description: User role not found.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                roles: [ 'createdRole' ]
+  /config/roleaccess:
+    get:
+      tags:
+        - Role
+      summary: View all roles.
+      operationId: viewAllRoles
+      description: Views all roles from the database.
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up roles. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up roles. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching roles. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle data view based on passed settings.
+          example: 'default'
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: search
+          description: Pass optional search string for looking up roles from database.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Total Count and Object/s in JSON format.
+        400:
+          description: Invalid input.
+    post:
+      tags:
+        - Role
+      summary: Creates a new role with default privileges.
+      operationId: createUserRole
+      description: Creates a new role with default privileges and adds it to the database.
+      responses:
+        201:
+          description: User role named `roleName` has been created.
+        400:
+          description: User role creation error.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roleName:
+                  type: string
+                  example: Sample Role
+                features:
+                  type: array
+                  items:
+                    type: string
+                    example: loginByUserRole
+                label:
+                  type: string
+                  example: Sample Role
+
+  # Accounting Management
+  /accountingManagement:
+    get:
+      tags:
+        - Accounting Management
+      summary: View all accounting management documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllAccountingManagement
+      description: View all accounting management documents.
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up models. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up models. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle data view based on passed settings.
+          example: default
+          required: true
+          schema:
+            type: string
+            enum:
+              - default
+              - archivedList
+              - documents
+        - in: query
+          name: search
+          description: Pass optional search string for looking up models from database.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+    post:
+      tags:
+        - Accounting Management
+      summary: Create Accounting Management document
+      security:
+        - bearerAuth: []
+      operationId: postAccountingManagement
+      description: Create Accounting Management document
+      responses:
+        201:
+          description: Document Created
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+      requestBody:
+        description: A JSON object containing accounting management information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project:
+                  type: string
+                  example: 634508f8eb77a6282040d4f5
+                totalActualRelease:
+                  type: number
+                  example: 10000
+                totalAccountPayable:
+                  type: number
+                  example: 10000
+                totalActualDisbursed:
+                  type: number
+                  example: 10000
+                totalUnreleased:
+                  type: number
+                  example: 10000
+                remarks:
+                  type: string
+                  example: remarks
+  /accountingManagement/{_id}:
+    get:
+      tags:
+        - Accounting Management
+      summary: View an accounting management document.
+      security:
+        - bearerAuth: []
+      operationId: viewAccountingManagement
+      description: View an accounting management document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Accounting management _id
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+    delete:
+      tags:
+        - Accounting Management
+      summary: Archive Accounting Management document
+      security:
+        - bearerAuth: []
+      operationId: deleteAccountingManagement
+      description: Archive Accounting Management document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Accounting management _id
+      responses:
+        200:
+          description: Archived
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+  /accountingManagement/{_id}/activate:
+    patch:
+      tags:
+        - Accounting Management
+      summary: Activate Accounting Management document
+      security:
+        - bearerAuth: []
+      operationId: activateAccountingManagement
+      description: Activate Accounting Management document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Accounting management _id
+      responses:
+        200:
+          description: Activated
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+  /accountingManagement/multiple/activate:
+    post:
+      tags:
+        - Accounting Management
+      summary: Activate multiple Accounting Management document
+      security:
+        - bearerAuth: []
+      operationId: activateManyAccountingManagement
+      description: Activate multiple Accounting Management document
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 6355fb6fdc084842981f7f10
+      responses:
+        200:
+          description: Activated
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+  /attachment/accountingManagement/{_id}/documents:
+    post:
+      tags:
+        - Accounting Management
+      summary: Upload Accounting Management attachments.
+      operationId: uploadAccountingManagement
+      description: Upload Accounting Management attachments.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+      parameters:
+        - in: path
+          name: _id
+          description: ObjectID of Accounting Management.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+
+  # Actual Expenses:
+  /actualExpenses:
+    post:
+      tags:
+        - Actual Expenses
+      summary: Create Actual Expenses
+      security:
+        - bearerAuth: []
+      operationId: postActualExpenses
+      description: Create Actual Expenses
+      requestBody:
+        description: A JSON object containing Actual Expenses information.
+        content:
+          application/json; from=billOfQuantity:
+            schema:
+              description: Create Actual Expenses from bill of quantity
+              type: object
+              properties:
+                project:
+                  type: string
+                  example: 63589c4da1cde811c06f0bb1
+                expenses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemType:
+                        type: string
+                        example: Meals
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Participants
+                            quantity:
+                              type: number
+                              example: 150
+                            actualExpenses:
+                              type: number
+                              example: 500
+                            remarks:
+                              type: string
+                              example: remarks
+                            weightEquivalent:
+                              type: number
+                              example: 100
+                            actualStartDate:
+                              type: string
+                              example: 2022-10-27
+                            actualCompletionDate:
+                              type: string
+                              example: 2022-10-28
+
+          application/json; from=lineItemBudget:
+            schema:
+              type: object
+              description: Create Actual Expenses from line item budget
+              properties:
+                project:
+                  type: string
+                  example: 634508f8eb77a6282040d4f5
+                expenses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemType:
+                        type: string
+                        example: Meals
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Participants
+                            quantity:
+                              type: number
+                              example: 150
+                            actualExpenses:
+                              type: number
+                              example: 500
+                            remarks:
+                              type: string
+                              example: remark
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+    get:
+      tags:
+        - Actual Expenses
+      summary: View All Actual Expenses
+      security:
+        - bearerAuth: []
+      operationId: viewAllActualExpenses
+      description: View All Actual Expenses
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up models. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up models. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle data view based on passed settings.
+          example: default
+          required: true
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up models from database.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /actualExpenses/{_id}:
+    get:
+      tags:
+        - Actual Expenses
+      summary: View All Actual Expenses
+      security:
+        - bearerAuth: []
+      operationId: viewActualExpenses
+      description: View All Actual Expenses
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Actual Expenses document
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Actual Expenses
+      summary: Delete Actual Expenses
+      security:
+        - bearerAuth: []
+      operationId: deleteActualExpenses
+      description: Delete Actual Expenses
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Actual Expenses
+      summary: Edit Actual Expenses
+      security:
+        - bearerAuth: []
+      operationId: patchActualExpenses
+      description: Edit Actual Expenses
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Actual Expenses document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Actual Expenses information.
+        content:
+          application/json; from=billOfQuantity:
+            schema:
+              description: Edit Actual Expenses from bill of quantity
+              type: object
+              properties:
+                project:
+                  type: string
+                  example: 63589c4da1cde811c06f0bb1
+                expenses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemType:
+                        type: string
+                        example: Meals
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Participants
+                            quantity:
+                              type: number
+                              example: 150
+                            actualExpenses:
+                              type: number
+                              example: 5000
+                            remarks:
+                              type: string
+                              example: remarks
+                            weightEquivalent:
+                              type: number
+                              example: 100.00
+                            actualStartDate:
+                              type: string
+                              format: date
+                              example: 2022-10-27
+                            actualCompletionDate:
+                              type: string
+                              format: date
+                              example: 2022-10-28
+          application/json; from=lineItemBudget:
+            schema:
+              type: object
+              description: Edit Actual Expenses from line item budget
+              properties:
+                project:
+                  type: string
+                  example: 63589c4da1cde811c06f0bb1
+                expenses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemType:
+                        type: string
+                        example: Meals
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Participants
+                            quantity:
+                              type: number
+                              example: 150
+                            actualExpenses:
+                              type: number
+                              example: 5000
+                            remarks:
+                              type: string
+                              example: remarks
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /actualExpenses/multiple/delete:
+    post:
+      tags:
+        - Actual Expenses
+      summary: Delete Multiple Actual Expenses
+      operationId: deleteMultipleActualExpenses
+      description: Delete Multiple Actual Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 635a1f145f49614cac5f8be9
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # App Configuration
+  /appConfiguration:
+    get:
+      tags:
+        - App Configuration
+      summary: View All App Configuration
+      description: View All App Configuration
+      operationId: viewAllAppConfiguration
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up models. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up models. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle data view based on passed settings.
+          example: default
+          required: true
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up models from database.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /appConfiguration/{_id}:
+    patch:
+      tags:
+        - App Configuration
+      summary: Edit App Configuration
+      security:
+        - bearerAuth: []
+      operationId: patchAppConfiguration
+      description: Edit App Configuration
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the App Configuration document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing App Configuration information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit App Configuration from bill of quantity
+              properties:
+                deactivationReasons:
+                  type: array
+                  items:
+                    type: string
+                    example: The user has resigned
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Campus
+  /campus:
+    get:
+      tags:
+        - Campus
+      summary: View all campus documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllCampus
+      description: View all campus documents.
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up models. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up models. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle data view based on passed settings.
+          example: default
+          required: true
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up models from database.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    post:
+      tags:
+        - Campus
+      summary: Create Campus document
+      security:
+        - bearerAuth: []
+      operationId: postCampus
+      description: Create Campus document
+      requestBody:
+        description: A JSON object containing campus information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Openapi Campus
+                code:
+                  type: string
+                  example: 010203
+      responses:
+        201:
+          description: Document Created
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /campus/{_id}:
+    get:
+      tags:
+        - Campus
+      summary: View a campus document.
+      security:
+        - bearerAuth: []
+      operationId: viewCampus
+      description: View a campus document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Campus ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+    patch:
+      tags:
+        - Campus
+      summary: Edit Campus
+      security:
+        - bearerAuth: []
+      operationId: patchCampus
+      description: Edit Campus
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Campus document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Campus information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit Campus request body.
+              properties:
+                name:
+                  type: string
+                  example: Openapi Campus 01
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Campus
+      summary: Delete Campus
+      security:
+        - bearerAuth: []
+      operationId: deleteCampus
+      description: Delete Campus
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /campus/multiple/delete:
+    post:
+      tags:
+        - Campus
+      summary: Delete Multiple Campus
+      operationId: deleteMultipleCampus
+      description: Delete Multiple Campus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 635b787011f6f1496493f2e9
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Dashboard
+  /dashboard:
+    get:
+      tags:
+        - Dashboard
+      summary: View Dashboard
+      security:
+        - bearerAuth: []
+      operationId: viewDashboard
+      description: View Dashboard
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /dashboard/overdue:
+    get:
+      tags:
+        - Dashboard
+      summary: View Overdue Dashboard
+      security:
+        - bearerAuth: []
+      operationId: viewOverdueDashboard
+      description: View Overdue Dashboard
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Department
+  /department:
+    post:
+      tags:
+        - Department
+      summary: Create department document.
+      security:
+        - bearerAuth: []
+      operationId: postDepartment
+      description: Create department document.
+      requestBody:
+        description: A JSON object containing department information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Openapi Department
+                description:
+                  type: string
+                  example: department of openapi
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      tags:
+        - Department
+      summary: Get all department documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllDepartment
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all department documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /department/{_id}:
+    get:
+      tags:
+        - Department
+      summary: View department document.
+      security:
+        - bearerAuth: []
+      operationId: viewDepartment
+      description: View department document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Department ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Department
+      summary: Edit Department
+      security:
+        - bearerAuth: []
+      operationId: patchDepartment
+      description: Edit Department
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Department document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Department information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit Department request body.
+              properties:
+                name:
+                  type: string
+                  example: Openapi Department 01
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Department
+      summary: Delete Department
+      security:
+        - bearerAuth: []
+      operationId: deleteDepartment
+      description: Delete Department
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /department/multiple/delete:
+    post:
+      tags:
+        - Department
+      summary: Delete Multiple Department
+      operationId: deleteMultipleDepartment
+      description: Delete Multiple Department
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 635b787011f6f1496493f2e9
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Equipment
+  /equipment:
+    post:
+      tags:
+        - Equipment
+      summary: Create equipment document.
+      security:
+        - bearerAuth: []
+      operationId: postEquipment
+      description: Create equipment document.
+      requestBody:
+        description: A JSON object containing department information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Openapi Equipment
+                quantity:
+                  type: number
+                  example: 10
+                availability:
+                  type: string
+                  example: Available
+                description:
+                  type: string
+                  example: openapi equipment
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      tags:
+        - Equipment
+      summary: Get all equipment documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllEquipment
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all equipment documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /equipment/{_id}:
+    get:
+      tags:
+        - Equipment
+      summary: View equipment document.
+      security:
+        - bearerAuth: []
+      operationId: viewEquipment
+      description: View equipment document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Equipment ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Equipment
+      summary: Edit Equipment
+      security:
+        - bearerAuth: []
+      operationId: patchEquipment
+      description: Edit Equipment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Equipment document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Equipment information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit Equipment request body.
+              properties:
+                name:
+                  type: string
+                  example: Openapi Equipment 01
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Equipment
+      summary: Delete Equipment
+      security:
+        - bearerAuth: []
+      operationId: deleteEquipment
+      description: Delete Equipment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /equipment/multiple/delete:
+    post:
+      tags:
+        - Equipment
+      summary: Delete Multiple Equipment
+      operationId: deleteMultipleEquipment
+      description: Delete Multiple Equipment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 635b787011f6f1496493f2e9
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Finance
+  /finance:
+    get:
+      tags:
+        - Finance
+      summary: Get all finance documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllFinance
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up finances. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up finances. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+              - documents
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all finance documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /finance/{_id}:
+    get:
+      tags:
+        - Finance
+      summary: View finance document.
+      security:
+        - bearerAuth: []
+      operationId: viewFinance
+      description: View finance document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Finance ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /finance/{_id}/obligate:
+    patch:
+      tags:
+        - Finance
+      summary: Obligate Finance
+      security:
+        - bearerAuth: []
+      operationId: obligateFinance
+      description: Obligate Finance
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Finance document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Obligate Item information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Obligate Item request body.
+              properties:
+                obligatedItem:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Item name
+                            quantity:
+                              type: number
+                              example: 123
+                            unit:
+                              type: number
+                              example: 1
+                            supplier:
+                              type: string
+                              example: PMS
+                            obligationDate:
+                              type: string
+                              example: 2022-05-03
+                            ORNumber:
+                              type: string
+                              example:  AAA123
+                            obligatedAmount:
+                              type: number
+                              example: 123
+                            particulars:
+                              type: string
+                              example: Particulars
+                            payee:
+                              type: string
+                              example: John Doe
+                            total:
+                              type: number
+                              example: 123
+                      itemType:
+                        type: string
+                        example: 'Meals'
+                      subTotal:
+                        type: number
+                        example: 123
+                obligatedAmount:
+                  type: number
+                  example: 123
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /finance/{_id}/addDisbursement:
+    patch:
+      tags:
+        - Finance
+      summary: Add Disbursement Finance
+      security:
+        - bearerAuth: []
+      operationId: addDisbursementFinance
+      description: Add Disbursement Finance
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Finance document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Obligate Item information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Obligate Item request body.
+              properties:
+                obligatedItem:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Item name
+                            quantity:
+                              type: number
+                              example: 123
+                            unit:
+                              type: number
+                              example: 1
+                            supplier:
+                              type: string
+                              example: PMS
+                            obligationDate:
+                              type: string
+                              example: 2022-05-03
+                            ORNumber:
+                              type: string
+                              example:  AAA123
+                            obligatedAmount:
+                              type: number
+                              example: 123
+                            particulars:
+                              type: string
+                              example: Particulars
+                            payee:
+                              type: string
+                              example: John Doe
+                            total:
+                              type: number
+                              example: 123
+                            actualDisbursement:
+                              type: number
+                              example: 123
+                            unpaidObligation:
+                              type: number
+                              example: 123
+                            DVNumber:
+                              type: string
+                              example: AAAbbb123
+                            gross:
+                              type: number
+                              example: 123
+                            taxPercentageLabel:
+                              type: string
+                              example: '%'
+                            taxPercentage:
+                              type: number
+                              example: 10
+                            taxAmount:
+                              type: number
+                              example: 12.3
+                            LDOtherDeduction:
+                              type: number
+                              example: 10
+                            netAmount:
+                              type: number
+                              example: 100.7
+                            isVatable:
+                              type: boolean
+                              example: true
+                            vatAmount:
+                              type: number
+                              example: 3
+                            ewt:
+                              type: number
+                              example: 5
+                            cvat:
+                              type: number
+                              example: 5
+                            pcv:
+                              type: number
+                              example: 5
+                            pcvTaxPercentage:
+                              type: number
+                              example: 5
+                      itemType:
+                        type: string
+                        example: 'Meals'
+                      subTotal:
+                        type: number
+                        example: 123
+                obligatedAmount:
+                  type: number
+                  example: 123
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /finance/{_id}/addChecks:
+    patch:
+      tags:
+        - Finance
+      summary: Add Checks Finance
+      security:
+        - bearerAuth: []
+      operationId: addChecksFinance
+      description: Add Checks Finance
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Finance document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Obligate Item information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Obligate Item request body.
+              properties:
+                obligatedItem:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Item name
+                            quantity:
+                              type: number
+                              example: 123
+                            unit:
+                              type: number
+                              example: 1
+                            supplier:
+                              type: string
+                              example: PMS
+                            obligationDate:
+                              type: string
+                              example: 2022-05-03
+                            ORNumber:
+                              type: string
+                              example:  AAA123
+                            obligatedAmount:
+                              type: number
+                              example: 123
+                            particulars:
+                              type: string
+                              example: Particulars
+                            payee:
+                              type: string
+                              example: John Doe
+                            total:
+                              type: number
+                              example: 123
+                            actualDisbursement:
+                              type: number
+                              example: 123
+                            unpaidObligation:
+                              type: number
+                              example: 123
+                            DVNumber:
+                              type: string
+                              example: AAAbbb123
+                            gross:
+                              type: number
+                              example: 123
+                            taxPercentageLabel:
+                              type: string
+                              example: '%'
+                            taxPercentage:
+                              type: number
+                              example: 10
+                            taxAmount:
+                              type: number
+                              example: 12.3
+                            LDOtherDeduction:
+                              type: number
+                              example: 10
+                            netAmount:
+                              type: number
+                              example: 100.7
+                            checkOrADANumber:
+                              type: string
+                              example: 00abc23
+                            date:
+                              type: string
+                              example: 2023-05-17
+                      itemType:
+                        type: string
+                        example: 'Meals'
+                      subTotal:
+                        type: number
+                        example: 123
+                obligatedAmount:
+                  type: number
+                  example: 123
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /finance/{_id}/setToCompleted:
+    patch:
+      tags:
+        - Finance
+      summary: Set to Completed Finance
+      security:
+        - bearerAuth: []
+      operationId: setToCompletedFinance
+      description: Set to Completed Finance
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Finance document
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /finance/{_id}/restore:
+    patch:
+      tags:
+        - Finance
+      summary: Restore Finance
+      security:
+        - bearerAuth: []
+      operationId: restoreFinance
+      description: Restore Finance from archives
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Finance document
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  /attachment/finance/{_id}/{_fieldName}:
+    post:
+      tags:
+        - Finance
+      summary: Upload Finance attachments.
+      operationId: uploadFinance
+      description: Upload Finance attachments.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+      parameters:
+        - in: path
+          name: _id
+          description: ObjectID of Finance.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: _fieldName
+          description: Name of the field
+          required: true
+          schema:
+            type: string
+            default: documents
+            enum:
+              - documents
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documents:
+                  type: string
+                  format: binary
+              description: Form data key must be the same as the `_fieldName`
+  /attachment/finance/{_id}/{_fieldName}/{_index}/{_fileName}:
+    delete:
+      tags:
+        - Finance
+      summary: Delete Finance Attachment
+      operationId: deletFinanceAttachment
+      description: Delete Finance Attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Finance ObjectId
+        - in: path
+          name: _fieldName
+          required: true
+          schema:
+            type: string
+            default: documents
+            enum:
+              - documents
+          description: name of the field
+        - in: path
+          name: _index
+          required: true
+          schema:
+            type: string
+          description: Position of the item in the array (zero indexing)
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # History
+  /history/{_model}/{_id}:
+    get:
+      tags:
+        - History
+      summary: View history of a model.
+      security:
+        - bearerAuth: []
+      operationId: viewHistory
+      description: View history of a model.
+      parameters:
+        - in: path
+          name: _model
+          required: true
+          schema:
+            type: string
+          description: Model name
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Model ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Item Type
+  /itemType:
+    post:
+      tags:
+        - Item Type
+      summary: Create item type document.
+      security:
+        - bearerAuth: []
+      operationId: postItemType
+      description: Create item type document.
+      requestBody:
+        description: A JSON object containing item type information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Openapi Item Type
+                ownership:
+                  type: string
+                  example: all
+                itemCategory:
+                  type: string
+                  example: Goods
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      tags:
+        - Item Type
+      summary: Get all itemType documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllItemType
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all item type documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /itemType/{_id}:
+    get:
+      tags:
+        - Item Type
+      summary: View item type document.
+      security:
+        - bearerAuth: []
+      operationId: viewItemType
+      description: View itemType document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Item Type ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Item Type
+      summary: Edit Item Type
+      security:
+        - bearerAuth: []
+      operationId: patchItemType
+      description: Edit Item Type
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Item Type document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Item Type information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit Item Type request body.
+              properties:
+                name:
+                  type: string
+                  example: Openapi Item Type 01
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Item Type
+      summary: Delete Item Type
+      security:
+        - bearerAuth: []
+      operationId: deleteItemType
+      description: Delete Item Type
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /itemType/multiple/delete:
+    post:
+      tags:
+        - Item Type
+      summary: Delete Multiple Item Type
+      operationId: deleteMultipleItemType
+      description: Delete Multiple Item Type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 635b787011f6f1496493f2e9
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # IPIM
+  /ipim/monthlyReport/latest/{_projectId}:
+    get:
+      tags:
+        - IPIM
+      summary: View latest project state.
+      security:
+        - bearerAuth: []
+      operationId: generateLatestReport
+      description: View latest project state. Will be used to create monthly report.
+      parameters:
+        - in: path
+          name: _projectId
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /ipim/monthlyReport/reports/{_projectId}:
+    get:
+      tags:
+        - IPIM
+      summary: View all the monthlyReports.
+      security:
+        - bearerAuth: []
+      operationId: viewMonthlyReport
+      description: View all the monthlyReports. Will be used by IPIM.
+      parameters:
+        - in: path
+          name: _projectId
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /ipim/monthlyReport:
+    post:
+      tags:
+        - IPIM
+      summary: Create IPIM Monthly Report
+      security:
+        - bearerAuth: []
+      operationId: postMonthlyReport
+      description: Create IPIM Monthly Report.
+      requestBody:
+        description: A JSON object containing IPIM Monthly Report information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: IPIM monthly report create request
+              properties:
+                projectId:
+                  type: string
+                  example: 63b66767288a7921480c40da
+                month:
+                  type: number
+                  example: 0
+                year:
+                  type: number
+                  example: 2023
+                problems:
+                  type: string
+                  example: problems
+                remarks:
+                  type: string
+                  example: remarks
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+  /ipim/monthlyReport/{_id}:
+    patch:
+      tags:
+        - IPIM
+      summary: Edit Monthly Report
+      security:
+        - bearerAuth: []
+      operationId: patchMonthlyReport
+      description: Edit Monthly Report
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Monthly Report document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing monthly report information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit monthly report request body.
+              properties:
+                problems:
+                  type: string
+                  example: lots of problems
+                remarks:
+                  type: string
+                  example: lots of remarks
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /ipim/billingInformation/{_projectId}:
+    get:
+      tags:
+        - IPIM
+      summary: View all IPIM billing information.
+      security:
+        - bearerAuth: []
+      operationId: viewBillingInformation
+      description: View all IPIM billing information.
+      parameters:
+        - in: path
+          name: _projectId
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /ipim/billingInformation:
+    post:
+      tags:
+        - IPIM
+      summary: Create IPIM Billing Information
+      security:
+        - bearerAuth: []
+      operationId: postBillingInformation
+      description: Create IPIM Billing Information
+      requestBody:
+        description: A JSON object containing IPIM Billing information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: IPIM monthly report create request
+              properties:
+                projectId:
+                  type: string
+                  example: 63b66767288a7921480c40da
+                checkOrReferenceNumber:
+                  type: string
+                  example: 257794B
+                billingNumber:
+                  type: number
+                  example: 1
+                grossAmount:
+                  type: number
+                  example: 1508768.78
+                retention:
+                  type: number
+                  example: 150876.88
+                netAmountPaid:
+                  type: number
+                  example: 1060853.05
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+  /ipim/billingInformation/{_id}:
+    patch:
+      tags:
+        - IPIM
+      summary: Edit Billing Information
+      security:
+        - bearerAuth: []
+      operationId: patchBillingInformation
+      description: Edit Billing Information
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Billing Information document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing billing information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit billing information request body.
+              properties:
+                projectId:
+                  type: string
+                  example: 63b66767288a7921480c40da
+                checkOrReferenceNumber:
+                  type: string
+                  example: 257794B
+                billingNumber:
+                  type: number
+                  example: 1
+                grossAmount:
+                  type: number
+                  example: 1508768.78
+                retention:
+                  type: number
+                  example: 150876.88
+                netAmountPaid:
+                  type: number
+                  example: 10608.05
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Line Item Budget
+  /lineItemBudget:
+    post:
+      tags:
+        - Line Item Budget
+      summary: Create Line Item Budget or Bill of Quantity
+      security:
+        - bearerAuth: []
+      operationId: postLineItemBudget
+      description: Create Line Item Budget or Bill of Quantity
+      requestBody:
+        description: A JSON object containing Line Item Budget or Bill of Quantity information.
+        content:
+          application/json; name=billOfQuantity:
+            schema:
+              type: object
+              description: Bill of Quantity create request
+              properties:
+                project:
+                  type: string
+                  example: 63e1cd8ea175e80cf024242a
+                budgets:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Meal
+                      quantity:
+                        type: number
+                        example: 1
+                      pshsFund:
+                        type: number
+                        example: 100
+                      otherFund:
+                        type: number
+                        example: 0
+                      remarks:
+                        type: string
+                        example: remarks
+                      weightEquivalent:
+                        type: number
+                        example: 100.00
+                      expectedStartDate:
+                        type: string
+                        example: 2023-02-01
+                      expectedCompletionDate:
+                        type: string
+                        example: 2023-02-01
+          application/json; name=lineItemBudget:
+            schema:
+              type: object
+              description: Line Item Budget create request
+              properties:
+                project:
+                  type: string
+                  example: 634508f8eb77a6282040d4f5
+                budgets:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemType:
+                        type: string
+                        example: Meals
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: Participants
+                            quantity:
+                              type: number
+                              example: 150
+                            pshsFund:
+                              type: number
+                              example: 120
+                            otherFund:
+                              type: number
+                              example: 120
+                            total:
+                              type: number
+                              example: 36000
+                            remarks:
+                              type: string
+                              example: remark
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+    get:
+      tags:
+        - Line Item Budget
+      summary: Get all line item budget documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllLineItemBudget
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all line item budget documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /lineItemBudget/{_id}:
+    get:
+      tags:
+        - Line Item Budget
+      summary: View line item budget document.
+      security:
+        - bearerAuth: []
+      operationId: viewLineItemBudget
+      description: View line item budget document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Line item budget ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Line Item Budget
+      summary: Edit Line Item Budget
+      security:
+        - bearerAuth: []
+      operationId: patchLineItemBudget
+      description: Edit Line Item Budget
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Line Item Budget document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Line Item Budget information.
+        content:
+          application/json; name=billOfQuantity:
+            schema:
+              type: object
+              description: Bill of Quantity edit request body
+              properties:
+                project:
+                  type: string
+                  example: 63589c4da1cde811c06f0bb1
+                budgets:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Participants
+                      quantity:
+                        type: number
+                        example: 150
+                      amount:
+                        type: number
+                        example: 5000
+                      remarks:
+                        type: string
+                        example: remarks
+                      expectedStartDate:
+                        type: string
+                        example: 2022/10/26
+                      expectedCompletionDate:
+                        type: string
+                        example: 2022/10/27
+
+          application/json; name=lineItemBudget:
+            schema:
+              type: object
+              description: Line Item Budget create request
+              properties:
+                project:
+                  type: string
+                  example: 634508f8eb77a6282040d4f5
+                budgets:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Participants
+                      quantity:
+                        type: number
+                        example: 150
+                      pshsFund:
+                        type: number
+                        example: 120
+                      otherFund:
+                        type: number
+                        example: 120
+                      total:
+                        type: number
+                        example: 36000
+                      remarks:
+                        type: string
+                        example: remarks
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Line Item Budget
+      summary: Delete Line Item Budget
+      security:
+        - bearerAuth: []
+      operationId: deleteLineItemBudget
+      description: Delete Line Item Budget
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /lineItemBudget/multiple/delete:
+    post:
+      tags:
+        - Line Item Budget
+      summary: Delete Multiple Line Item Budget
+      operationId: deleteMultipleLineItemBudget
+      description: Delete Multiple Line Item Budget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 635b787011f6f1496493f2e9
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Notification
+  /overdueNotification:
+    get:
+      tags:
+        - Notification
+      summary: Get all the overdue projects and tasks.
+      operationId: getOverdueNotification
+      description: Get all the overdue projects and tasks from the database.
+      responses:
+        200:
+          description: Object/s in JSON format.
+        403:
+          description: 'Forbidden. Authorization Error: Access for the method for user role guest is not available.'
+    patch:
+      tags:
+        - Notification
+      summary: Set the overdue notification settings.
+      operationId: patchOverdueNotification
+      description: Set the overdue notification settings.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                overdueNotification:
+                  type: string
+                  example: tomorrow
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Project
+  /project:
+    get:
+      tags:
+        - Project
+      summary: Get all projects
+      security:
+        - bearerAuth: []
+      operationId: viewAllProject
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+              - remainingBudget
+              - taggedDocuments
+              - taggedArchivedFiles
+        - in: query
+          name: search
+          description: Pass optional search string for looking up projects from database.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: year
+          description: Pass optional year string for yearly project filter. Only works for table dataview.
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: quarter
+          description: Pass optional quarter string for quarterly project filter. Only works for table dataview.
+          required: false
+          schema:
+            type: number
+      description: Get all project documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    post:
+      tags:
+        - Project
+      summary: Create Project
+      security:
+        - bearerAuth: []
+      operationId: postProject
+      description: Create Project document
+      requestBody:
+        description: A JSON object containing project information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Project Test 01
+                projectType:
+                  type: string
+                  example: 637461be3038701fb4bd20d1
+                description:
+                  type: string
+                  example: Project Desc
+                objective:
+                  type: string
+                  example: Project Obj
+                expectedStartDate:
+                  type: string
+                  example: 2023-02-01
+                expectedCompletionDate:
+                  type: string
+                  example: 2023-02-10
+                status:
+                  type: string
+                  example: Not Yet Started
+                campus:
+                  type: string
+                  example: 637c3b147a16191494fbcca0
+                fundingSource:
+                  type: string
+                  example: Funding Source
+                nameOfContractor:
+                  type: string
+                  example: Contractor
+                contractorProjectEngineer:
+                  type: string
+                  example: Engineer
+                location:
+                  type: string
+                  example: Location
+                gaaAmount:
+                  type: number
+                  example: 12000
+                abc:
+                  type: number
+                  example: 12000
+                billingSchedule:
+                  type: string
+                  example: Monthly
+                numberOfExtensionDays:
+                  type: number
+                  example: 100
+                extensionBasis:
+                  type: string
+                  example: Covid
+                dateOfInvitation:
+                  type: string
+                  example: 2023-02-01
+                bidOpening:
+                  type: string
+                  example: 2023-02-01
+                dateOfAward:
+                  type: string
+                  example: 2023-02-01
+                dateOfNoticeToProceed:
+                  type: string
+                  example: 2023-02-01
+                members:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Admin User
+                      _id:
+                        type: string
+                        example: 6374619ec2684b19b06586d1
+                remarks:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Remarks
+                equipments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 63c4f49e7a65171fa842ae43
+                      name:
+                        type: string
+                        example: equipment 01
+                      quantity:
+                        type: number
+                        example: 1
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /project/years/active:
+    get:
+      tags:
+        - Project
+      summary: Get all project years
+      description: Get all project years. This is used by project list filter.
+      security:
+        - bearerAuth: []
+      operationId: viewProjectYears
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /project/{_id}:
+    get:
+      tags:
+        - Project
+      summary: View a Project document
+      operationId: viewProject
+      description: View a Project document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Project
+      summary: Edit Project
+      operationId: patchProject
+      description: Edit Project document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+      requestBody:
+        description: A JSON object containing project information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: project openapi 01
+                objective:
+                  type: string
+                  example: objective
+                description:
+                  type: string
+                  example: description
+                status:
+                  type: string
+                  example: Active
+                expectedStartDate:
+                  type: string
+                  example: 2022/11/26
+                expectedCompletionDate:
+                  type: string
+                  example: 2022/11/30
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Project
+      summary: Delete Project Document
+      operationId: deleteProject
+      description: Delete Project Document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/project/{_id}/{_fieldName}/{_fileName}:
+    get:
+      tags:
+        - Project
+      summary: Download Project Attachment
+      operationId: downloadProjectAttachment
+      description: Download Project Attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+        - in: path
+          name: _fieldName
+          required: true
+          schema:
+            type: string
+          description: Name of the field
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Project
+      summary: Change originalname of project attachment
+      operationId: patchProjectAttachmentOriginalName
+      description: Change originalname of project attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+        - in: path
+          name: _fieldName
+          required: true
+          schema:
+            type: string
+          description: Name of the field
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newOriginalName:
+                  type: string
+                  example: example0101.pdf
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/project/{_id}/{_fieldName}/{_fileName}/{_operate}:
+    patch:
+      tags:
+        - Project
+      summary: Operate Project Attachment
+      operationId: operateProjectAttachment
+      description: Operate Project Attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+        - in: path
+          name: _fieldName
+          required: true
+          schema:
+            type: string
+            enum:
+              - termsOfReference
+              - contract
+              - noticeToProceed
+              - billOfQuantity
+          description: Name of the field
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+        - in: path
+          name: _operate
+          required: true
+          schema:
+            type: string
+            enum:
+              - archive
+              - activate
+          description: Operation
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /project/multiple/delete:
+    post:
+      tags:
+        - Project
+      summary: Delete Multiple Project
+      operationId: deleteMultipleProject
+      description: Delete Multiple Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 63589c4da1cde811c06f0bb1
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/project/{_id}/{_fieldName}/{_index}/{_fileName}:
+    delete:
+      tags:
+        - Project
+      summary: Delete Project Attachment
+      operationId: deletProjectAttachment
+      description: Delete Project Attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project ObjectId
+        - in: path
+          name: _fieldName
+          required: true
+          schema:
+            type: string
+            enum:
+              - termsOfReference
+              - contact
+              - noticeToProceed
+              - billOfQuantity
+          description: name of the field
+        - in: path
+          name: _index
+          required: true
+          schema:
+            type: string
+          description: Position of the item in the array (zero indexing)
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Project Task
+  /projectTask:
+    get:
+      tags:
+        - Project Task
+      summary: Get all project tasks
+      security:
+        - bearerAuth: []
+      operationId: viewAllProjectTask
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+              - projectAssignees
+              - documents
+              - archivedFiles
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all project task documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    post:
+      tags:
+        - Project
+      summary: Create Project Task document
+      operationId: postProjectTask
+      description: Create Project Task document
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: A JSON containing Project Task information.
+              example:  {
+                "title": "Openapi Project Task",
+                "description": "openapi project task",
+                "status": "Not Yet Started",
+                "project": "63589c4da1cde811c06f0bb1",
+                "expectedStartDate": "2022-10-30",
+                "expectedCompletionDate": "2022-11-02"
+              }
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/projectTask/{_id}/documents:
+    post:
+      tags:
+        - Project Task
+      summary: Upload Project Task Attachment
+      operationId: uploadProjectTaskAttachment
+      description: Upload Project Task Attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /projectTask/{_id}:
+    get:
+      tags:
+        - Project Task
+      summary: View Project Task document
+      operationId: viewProjectTask
+      description: View Project Task document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Project Task
+      summary: Edit Project Task document
+      operationId: patchProjectTask
+      description: Edit Project Task document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: A JSON containing Project Task information.
+              example:  {
+                "description": "openapi project task edited description"
+              }
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Project Task
+      summary: Delete Project Task document
+      operationId: deleteProjectTask
+      description: Delete Project Task document
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/projectTask/{_id}/documents/{_fileName}:
+    get:
+      tags:
+        - Project Task
+      summary: Download Project Task attachment
+      operationId: downloadProjectTaskAttachment
+      description: Download Project Task attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Project Task
+      summary: Edit the original name of a project task attachment
+      operationId: patchOriginalNameProjectTaskAttachment
+      description: Edit the original name of a project task attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newOriginalName:
+                  type: string
+                  example: example03.pdf
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/projectTask/{_id}/documents/{_operate}/multiple:
+    patch:
+      tags:
+        - Project Task
+      summary: Archive or activate multiple project task attachments
+      operationId: operateMultipleProjectTaskAttachment
+      description: Archive or activate multiple project task attachments
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+        - in: path
+          name: _operate
+          required: true
+          schema:
+            type: string
+            enum:
+              - archive
+              - activate
+          description: Operation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileNames:
+                  type: array
+                  items:
+                    type: string
+                    example: example3.pdf
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/projectTask/{_id}/documents/{_fileName}/{_operate}:
+    patch:
+      tags:
+        - Project Task
+      summary: Archive or activate a project task attachment
+      operationId: operateProjectTaskAttachment
+      description: Archive or activate a project task attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+        - in: path
+          name: _operate
+          required: true
+          schema:
+            type: string
+            enum:
+              - archive
+              - activate
+          description: Operation
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /projectTask/multiple/delete:
+    post:
+      tags:
+        - Project Task
+      summary: Delete multiple Project Task documents
+      operationId: deleteMultipleProjectTask
+      description: Delete multiple Project Task documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                    example: 635a33d47e7bd10ff8e16b17
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /attachment/projectTask/{_id}/documents/{_index}/{_fileName}:
+    delete:
+      tags:
+        - Project Task
+      summary: Delete Project Task Attachment
+      operationId: deleteProjectTaskAttachment
+      description: Delete Project Task Attachment
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Task ObjectId
+        - in: path
+          name: _index
+          required: true
+          schema:
+            type: string
+            example: '0'
+          description: Position of the attachment in the array (zero-indexing)
+        - in: path
+          name: _fileName
+          required: true
+          schema:
+            type: string
+          description: Name of the file
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Project Type
+  /projectType:
+    post:
+      tags:
+        - Project Type
+      summary: Create project type document.
+      security:
+        - bearerAuth: []
+      operationId: postProjectType
+      description: Create project type document.
+      requestBody:
+        description: A JSON object containing project type information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Openapi Project Type
+                description:
+                  type: string
+                  example: project type of openapi
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      tags:
+        - Project Type
+      summary: Get all projectType documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllProjectType
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up users. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up users. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all department documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /projectType/{_id}:
+    get:
+      tags:
+        - Project Type
+      summary: View project type document.
+      security:
+        - bearerAuth: []
+      operationId: viewProjectType
+      description: View project type document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Type ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Project Type
+      summary: Edit Project Type
+      security:
+        - bearerAuth: []
+      operationId: patchProjectType
+      description: Edit Project Type
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Project Type document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Project Type information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit Project Type request body.
+              properties:
+                name:
+                  type: string
+                  example: Openapi Project Type 01
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Project Type
+      summary: Delete Project Type
+      security:
+        - bearerAuth: []
+      operationId: deleteProjectType
+      description: Delete Project Type
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /projectType/multiple/delete:
+    post:
+      tags:
+        - Project Type
+      summary: Delete Multiple Project Type
+      operationId: deleteMultipleProjectType
+      description: Delete Multiple Project Type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: string
+                  example: 635b787011f6f1496493f2e9
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Report
+  /report/{_reportName}:
+    post:
+      tags:
+        - Report
+      summary: Create a report.
+      operationId: postReport
+      description: Create a report.
+      parameters:
+        - in: path
+          name: _reportName
+          required: true
+          schema:
+            type: string
+            enum:
+              - auditLogs
+              - project
+              - finance
+          description: Name of the report
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: A JSON containing report information
+              type: object
+              properties:
+                dateFrom:
+                  type: string
+                  example: 2022/11/01
+                dateTo:
+                  type: string
+                  example: 2022/11/02
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      tags:
+        - Report
+      summary: View All Audit Reports
+      operationId: viewAllAuditLogReport
+      description: View All Audit Reports
+      parameters:
+      - in: path
+        name: _reportName
+        required: true
+        schema:
+          type: string
+          enum:
+            - auditLogs
+            - project
+        description: Name of the report
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /report/{_reportName}/{_id}:
+    get:
+      tags:
+        - Report
+      summary: View Audit Log Report
+      operationId: viewAuditLogReport
+      description: View Audit Log Report
+      parameters:
+        - in: path
+          name: _reportName
+          required: true
+          schema:
+            type: string
+            enum:
+              - auditLogs
+              - project
+          description: Name of the report
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Audit Log Report ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Project Monitoring Report
+  /report/project:
+    post:
+      tags:
+        - Project Monitoring Report
+      summary: Create a project monitoring report.
+      operationId: postProjectReport
+      description: Create a project monitoring report.
+      requestBody:
+        content:
+          application/json; name=dateRange:
+            schema:
+              description: A JSON containing project monitoring report information.
+              type: object
+              properties:
+                dateFrom:
+                  type: string
+                  example: 2022/11/01
+                dateTo:
+                  type: string
+                  example: 2022/11/02
+          application/json; name=quarterly:
+            schema:
+              type: object
+              properties:
+                quarter:
+                  type: string
+                  example: 4
+                year:
+                  type: string
+                  example: 2022
+              description: A JSON containing project monitoring report information.
+          application/json; name=yearly:
+            schema:
+              type: object
+              properties:
+                year:
+                  type: string
+                  example: 2022
+              description: A JSON containing project monitoring report information.
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      tags:
+        - Project Monitoring Report
+      summary: View All Project Monitoring Reports
+      operationId: viewAllProjectReport
+      description: View All Project Monitoring Reports
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /report/project/{_id}:
+    get:
+      tags:
+        - Project Monitoring Report
+      summary: View Project Monitoring Report
+      operationId: viewProjectMonitoring
+      description: View Project Monitoring Report
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Project Monitoring Report ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+
+  # Supplier
+  /supplier:
+    post:
+      tags:
+        - Supplier
+      summary: Create supplier document.
+      security:
+        - bearerAuth: []
+      operationId: postSupplier
+      description: Create supplier document.
+      requestBody:
+        description: A JSON object containing supplier information.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Openapi Supplier
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    get:
+      tags:
+        - Supplier
+      summary: Get all supplier documents.
+      security:
+        - bearerAuth: []
+      operationId: viewAllSupplier
+      parameters:
+        - in: query
+          name: key
+          description: Pass an optional key for looking up suppliers. <code>value</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: value
+          description: Pass an optional value for looking up suppliers. <code>key</code> must be supplied for it to work.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: advancedQuery
+          description: Pass an optional query string to show matching models. Make sure that your JSON Object is URIEncoded.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          description: An optional query to sort data view by the passed value.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: asc
+          description: Pass <code>1</code> if sort data in an ascending order, <code>0</code> if descending.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1
+        - in: query
+          name: total
+          description: Pass <code>true</code> to display count of results, <code>false</code> to hide.
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: start
+          description: Number of user records to skip for pagination.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: count
+          description: Maximum number of user records to return.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: dataview
+          description: Toggle user list view based on passed settings.
+          required: true
+          example: default
+          schema:
+            type: string
+            enum:
+              - default
+              - table
+        - in: query
+          name: search
+          description: Pass optional search string for looking up users from database.
+          required: false
+          schema:
+            type: string
+      description: Get all supplier documents
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /supplier/{_id}:
+    get:
+      tags:
+        - Supplier
+      summary: View supplier document.
+      security:
+        - bearerAuth: []
+      operationId: viewSupplier
+      description: View supplier document.
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+          description: Supplier ObjectId
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    patch:
+      tags:
+        - Supplier
+      summary: Edit Supplier
+      security:
+        - bearerAuth: []
+      operationId: patchSupplier
+      description: Edit Supplier
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          description: ObjectId of the Supplier document
+          schema:
+            type: string
+      requestBody:
+        description: A JSON object containing Supplier information.
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Edit Supplier request body.
+              properties:
+                name:
+                  type: string
+                  example: Openapi Supplier 01
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+    delete:
+      tags:
+        - Supplier
+      summary: Delete Supplier
+      security:
+        - bearerAuth: []
+      operationId: deleteSupplier
+      description: Delete Supplier
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        403:
+          description: Forbidden
+        404:
+          description: Not Found

@@ -1,0 +1,41 @@
+<!--
+- File name: examination_link.njk
+- Program description:
+- Email notif for the examination link
+- 
+- <Code details in specific>
+- 
+- Module Exports:
+- - examination_link.njk: Uses the base.njk then provide
+- a template to be used by the mailer module to send
+- notification to a user that he/she can take the exam that time.
+-->
+
+
+{% extends "./base.njk" %}
+
+{% block content %}
+    <div class="l--body">
+        <img class="l--title--logo" src='cid:app-logo'/>
+
+        <h2>
+            Hello {{userObject.firstName}} {{userObject.lastName}},
+        </h2>
+        <h2> Your exam will start once you open the link.</h2>
+
+        {% if password %}
+        <h2> Use this password to access the exam: {{password}}</h2>
+        {% endif %}
+        <h2>Click the button below to proceed with your exam:</h2>
+        <h2 style="margin: 3%">
+            <a class="btn l--confirm-button" href="{{link}}" style="color: whitesmoke">
+                Proceed to Exam
+            </a>
+        </h2>
+        <br/>
+        <h2>
+          This is an auto-generated message. For any concerns, please contact the AES System Administrator.
+        </h2>
+    </div>
+{% endblock %}
+                 

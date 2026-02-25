@@ -1,0 +1,8 @@
+{ 
+  "compact": true,
+  "env": {
+    "development" : {
+      "compact": false
+    }
+  }
+}
